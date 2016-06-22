@@ -1,0 +1,29 @@
+body{
+  background-image: url();
+  text-decoration: none;
+}
+tr td a{
+      text-decoration: none;
+      font-size: 18px; font-family: verdana; font-weight:bold;
+}
+table { border: thin solid #cccccc;
+        background: #ffffff; margin-top: -20px;
+}
+th { letter-spacing: 2.5px; background: #eeeeee; 
+   color: #000000; text-transform: uppercase; 
+   text-align: center; border-top: thick solid #eeeeee;
+   border-bottom: thin solid #cccccc; 
+}
+tr { letter-spacing: 1.5px; background: #dddddd; 
+   color: #000000; text-transform: uppercase; 
+   border-top: thick solid #eeeeee; 
+   border-bottom: thin solid #cccccc;
+}
+tr{ background: #ffffff; color: #000000; 
+}
+td { border: thin solid #cccccc; padding: 10px; 
+     text-transform: uppercase; color: blue;
+}
+span{
+
+}

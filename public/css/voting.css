@@ -1,0 +1,102 @@
+body{
+	font-family:"open sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+	background-color: #fff;
+	color: #676a6c;
+	height: 100%;
+}
+
+.nav-buttons{
+	/*background: #FFD700;*/
+	height: 31px !important;
+	padding-left: 30px; 
+	padding-top: 10px;
+	box-shadow: initial;
+
+}
+.nav-buttons a{
+	text-decoration: none;
+	color: red;
+}
+
+
+.positions{
+	width: 70%;
+	position: relative;
+	left: 50%;
+	margin-left: -35%;
+	/*background: red;*/
+}
+
+
+.office a{
+	text-decoration: none;
+}
+
+#office_btn{
+	color: black !important;
+	min-width: 65%;
+	text-align: center;
+	/*letter-spacing: 2px;*/
+	font-weight: bold;
+	font-size: 22px;
+	display: block;
+	padding: 25px 0;
+    margin-left: 21%;
+    margin-bottom: 20px;
+	/*background-color: #BFEFFF#ebebeb ffdab9;*/
+	background-color:#ebebeb ;
+	border-radius: 10px;
+	text-transform: uppercase;
+	text-decoration: none !important;
+	box-shadow: 2px 2px 5px #a6b9c4, inset 0px 0px 40px #fff;
+
+}
+
+#office_btn2{
+	color: #ff0000 !important;
+	min-width: 65%;
+	text-align: center;
+	/*letter-spacing: 2px;*/
+	font-weight: bold;
+	font-size: 22px;
+	display: block;
+	padding: 25px 0;
+    margin-left: 21%;
+    margin-bottom: 20px;
+	/*background-color: #BFEFFF#ebebeb;*/
+	background-color:#ccc ;
+	border-radius: 10px;
+	text-transform: uppercase;
+	text-decoration: none !important;
+	box-shadow: 2px 2px 5px #a6b9c4, inset 0px 0px 40px #fff;
+
+}
+
+a{
+	text-decoration: none;
+	display: block;
+}
+
+.box1{
+	width: 230px;
+	background: #eeeeee;
+	font-family: tahoma;
+	font-weight: bold;
+	font-size: 18px;
+	margin-left: 72%;
+	margin-top: 25px;
+	padding: 10px;
+	position: fixed;
+}
+
+.v-status{
+	float: right;
+	margin-right: 20px;
+}
+
+.btn-info {
+  color: #fff;
+  background-color: #5bc0de;
+  border-color: #46b8da;
+}
+
