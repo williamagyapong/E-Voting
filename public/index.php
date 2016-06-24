@@ -6,10 +6,21 @@ session_start();
   
 ?>
 <!DOCTYPE html>
-<html>
-<head>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
    <title>Admin login</title>
    <link rel="stylesheet" type="text/css" href="css/main.css">
+
+   <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
      <style type="text/css">
       body{
       margin:0;
@@ -35,7 +46,8 @@ session_start();
         		echo "Please both fields are required.";
         	} else{
         		$username =trim($_POST['username']);
-        		$password =trim($_POST['password']);
+        		$password =md5(trim($_POST['password']));
+
             
         		$sql ="SELECT * FROM `admin` WHERE `username` ='$username' AND `password` ='$password'";
         		$result = mysql_query($sql)or die(mysql_error());
@@ -45,7 +57,7 @@ session_start();
         		 	$row = mysql_fetch_assoc($result);
 
         		 	$_SESSION['ADMIN'] = $row['username'];
-        		 	$_SESSION['ADMINID'] = $row['password'];
+        		 	$_SESSION['ADMINID'] = $row['id'];
 
         		 	if(isset($_SESSION['ADMIN']/*, $_SESSION['ADMINID']*/))
               {

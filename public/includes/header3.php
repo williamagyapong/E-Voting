@@ -22,8 +22,8 @@ require("../core/init.php");
 	</div>
 	
 	 
-	<div class="panel">
+	<!-- <div class="panel">
 		
-	</div>
+	</div> -->
 </body>
 </html>

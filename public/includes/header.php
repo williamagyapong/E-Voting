@@ -13,8 +13,7 @@ require("../core/init.php");
 </head>
 <body>
 	<div id="header"> 
-	   <?php 
-	    //echo $config_appName; ?>
+	   
 	   <div class="logo">
 	   	   <img src="images/logo/logo3.png" width="150" height="80">
 
@@ -24,7 +23,7 @@ require("../core/init.php");
 	
 	 
 	<div class="panel">
-		<a href="dashboard.php" class="panel-body"><button class="panel-body">Control Panel</button></a>
+		<a href="dashboard.php" ><button class="panel-btn">Control Panel</button></a>
 	</div>
 </body>
 </html>

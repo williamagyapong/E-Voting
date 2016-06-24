@@ -43,7 +43,7 @@
         $tablesql5 ="CREATE TABLE IF NOT EXISTS admin(
           id TINYINT UNSIGNED AUTO_INCREMENT,
           username VARCHAR(20),
-          password VARCHAR(10),
+          password VARCHAR(100),
           PRIMARY KEY(id))"; 
         if(mysql_query($tablesql)&& mysql_query($tablesql2)&& mysql_query($tablesql3) &&
           mysql_query($tablesql4)&& mysql_query($tablesql5)) {
@@ -53,10 +53,17 @@
           $sql = "SELECT * FROM  admin";
           $result = mysql_query($sql);
           $numrow = mysql_num_rows($result);
+
+          $pass1 = md5("willi0010");
+          $pass2 = md5("234546");
+          $pass3 = md5("237283");
+          $pass4 = md5("238798");
+          $pass5 = md5("235768");
+          
           if ($numrow==0) {
             $adminsql ="INSERT INTO admin(username, password)
-             VALUES('willisco', 'willi0010'),('admin1', '234546'),('admin2', '237283') ,
-             ('admin3', '238798'),('admin4','235768')";
+             VALUES('willisco', '{$pass1}'),('admin1', '{$pass2}'),('admin2', '{$pass3}') ,
+             ('admin3', '{$pass4}'),('admin4','{$pass5}')";
              mysql_query($adminsql);
           } else{
               //echo "Could not establish admin credentials";

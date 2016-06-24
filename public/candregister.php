@@ -185,7 +185,7 @@ if(isset($_POST['submit']))
     </select></td>
   </tr>
      <tr>
-      <td></td><td><input type ="submit" name="submit" value="REGISTER"></td>
+      <td></td><td><input type ="submit" name="submit" value="REGISTER" class="submit-btn"></td>
     </tr>
   </table>
   </div>

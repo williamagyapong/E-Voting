@@ -86,7 +86,7 @@ session_start();
     		  	  <ul class="dropdown-menu" role="menu">
     		  	  	<li><a href="adminlogout.php">Logout</a></li>
     		  	  	<li class="divider"></li>
-    		  	  	<li><a href="#">Change Password</a></li>
+    		  	  	<li><a href="changepass.php">Change Password</a></li>
     		  	  </ul>
     		  </li>
 

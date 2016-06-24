@@ -21,7 +21,7 @@ require_once '../core/init.php';
 	    <div class="sub-text">Experience smartness in voting</div>
 	</div>
 	<div class="panel">
-		<a href="voting.php" class="panel-body"><button class="btn">Back</button></a>
+		<a href="voting.php"><button class="panel-btn">Back</button></a>
 	</div>
 </body>
 </html>

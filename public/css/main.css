@@ -112,7 +112,7 @@ frameset{
 }
 .panel{
 	/*background: #FFD700;*/
-	height: 31px;
+	height: 25px;
 	padding-left: 30px; 
 	padding-top: 10px;
 	box-shadow: initial;
@@ -122,16 +122,40 @@ frameset{
 	text-decoration: none;
 	color: red; display: block;
 }
-.panel-body{
+.panel-btn{
+	color: #fff;
+    background-color: #337ab7;
+    border-color: #2e6da4;
 	border-radius: 6px;
 	font-weight: bold;
 	font-size: 1.2em;
-	color: red; 
 	cursor: pointer;
 	float: right;
 	margin-right: 40px;
-	width: 180px;
+	width: 169px;
 	height: 30px;
+}
+.panel-btn:hover {
+  color: #fff;
+  background-color: #286090;
+  border-color: #204d74;
+}
+
+.submit-btn{
+    color: #fff;
+    background-color: #337ab7;
+    border-color: #2e6da4;
+	border-radius: 6px;
+	font-weight: bold;
+	font-size: 1.2em;
+	cursor: pointer;
+	width: 169px;
+	height: 30px; 
+}
+.submit-btn:hover {
+  color: #fff;
+  background-color: #286090;
+  border-color: #204d74;
 }
 .sub-text{
 	color: red;

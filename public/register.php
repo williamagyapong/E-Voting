@@ -144,7 +144,7 @@ session_start();
     </tr>
 
      <tr>
-      <td></td><td><input type ="submit" name="submit" value="REGISTER"></td>
+      <td></td><td><input type ="submit" name="submit" value="REGISTER" class="submit-btn"></td>
     </tr>
 
 

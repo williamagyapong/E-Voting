@@ -12,7 +12,7 @@
 if(isset($_POST['drop'])){
 	echo "<div class='alert'>";
       echo "<h2>Doing this will destroy all votings. Do you want to continue?";
-  echo "<form action='drop_table.php' method='POST'>";
+  echo "<form action='reset.php' method='POST'>";
     echo "<input type='submit' name='no' value='NO'>";
     echo "<input type='submit' name='yes' value='YES'>";
   echo "</form>";

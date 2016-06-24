@@ -126,6 +126,56 @@ function isLoggedIn()
 		redirect('index');
 }*/
 
+
+function changePassword($userId, $prevPass, $newPass1, $newPass2)
+		{
+			 $msg = [];
+			if(empty($prevPass) || empty($newPass1) || empty($newPass2))
+			{
+				$msg[] = "All fields are required";
+			}
+			else{
+				   // retrieve user previous password
+			       $password =  select("SELECT password FROM admin WHERE id =".$userId)[0];
+			       
+			      if($password['password'] != md5($prevPass))
+			       {
+                      $msg[] = " Incorrect current password";
+			       }
+
+			       if($newPass1 == $newPass2)
+			       {
+				       	  $passlength = strlen($newPass1);
+			       	    if(!($passlength>=5 && $passlength<=20))
+			       	    {
+			       	    	$msg[] = "New password characters out of required range( 5 - 20 )";
+			       	    }
+			       	  
+			       }
+			       else{
+			       	     $msg[] = "New passwords do not match";
+			       }
+			      
+		       	 
+			          if(count($msg)== 0)
+			          {
+			          	// no errors 
+			          	 $newPass1 = escape($newPass1);
+			          	 $password_hash = md5($newPass1);
+                         if(mysql_query("UPDATE admin SET password = '".$password_hash."' WHERE id ='".$userId."'"))
+                         {
+                         	$msg[] = "Password has been successfully updated";
+                         }
+                         else{
+                         	$msg[] = "Unable to save changes";
+                         }
+			          }
+
+			}
+              return $msg;
+		}
+  
+
 function auth()
 {
 	if(!isset($_SESSION['ADMIN'])) {
@@ -147,64 +197,15 @@ function getVoter()
 }
 
 
-function changePassword($userId, $prevPass, $newPass1, $newPass2)
-{
-	 $msg = [];
-	if(empty($prevPass) || empty($newPass1) || empty($newPass2))
-	{
-		$msg[] = "All fields are required";
-	}
-	else{
-		   // retrieve user previous password
-	       $password =  select("SELECT password FROM users WHERE id =".$userId)[0];
-	      if($password['password'] != md5($prevPass))
-	       {
-              $msg[] = " Incorrect current password";
-	       }
-
-	       if($newPass1 == $newPass2)
-	       {
-		       	  $passlength = strlen($newPass1);
-	       	    if(!($passlength>=5 && $passlength<=20))
-	       	    {
-	       	    	$msg[] = "New password characters out of required range( 5 - 20 )";
-	       	    }
-	       	  
-	       }
-	       else{
-	       	     $msg[] = "New passwords do not match";
-	       }
-	      
-       	   
-	       
-           
-
-	          if(count($msg)== 0)
-	          {
-	          	// no errors 
-	          	 $newPass1 = escape($newPass1);
-	          	 $password_hash = md5($newPass1);
-                 if(mysql_query("UPDATE users SET password = '".$password_hash."' WHERE id ='".$userId."'"))
-                 {
-                 	$msg[] = "Password has been successfully updated";
-                 }
-                 else{
-                 	$msg[] = "Unable to save changes";
-                 }
-	          }
-
-	}
-      return $msg;
-}
-
  function updateStatus()
  {
  	if(mysql_query("UPDATE `voters` SET `status`=1 WHERE `id`=".$_SESSION['user-id']))
  	{
- 		mysql_query("UPDATE `offices` SET `status` = 0");
 
  		return true;
+
  	}else{
+ 		
  		return false;
  	}
  }

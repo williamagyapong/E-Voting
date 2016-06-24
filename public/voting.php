@@ -54,11 +54,11 @@ auth2();
   </div>
   <div class="nav-buttons">
       <?php if(getVoter()[0]['status']==1):?>
-      <button class="btn"><a href="logout.php?exit">Logout</a></button> 
+      <button class="mybtn"><a href="logout.php?exit">Logout</a></button> 
     <?php endif;?>
 
       <?php if(($numVoted==$numOffices)&&(getVoter()[0]['status']!=1)):?>
-      <button class="btn"><a href="voting.php?done">Confirm</a></button>
+      <button class="mybtn"><a href="voting.php?done">Confirm</a></button>
      <?php endif;?>
 	    
 		

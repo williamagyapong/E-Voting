@@ -102,7 +102,7 @@ session_start();
                  <input type="text" name="office4" class="text-input">
               </td>
             </tr>
-            <tr><td></td><td><input type="submit" name="create" value="CREATE"></td></tr>
+            <tr><td></td><td><input type="submit" name="create" value="CREATE" class="submit-btn"></td></tr>
           </table>
       </div>
     </fieldset> 
