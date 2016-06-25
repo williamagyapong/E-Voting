@@ -171,19 +171,21 @@ function createdb()
       }
 }
 
+
 function createElection()
 {   
    
-    $name = $_POST['ename'];
-    $time = $_POST['etime'];
+    $name        = $_POST['name'];
+    $institution = $_POST['institute'];
+    $date = date('Y-m-d H:i:s');
     
-    mysql_select_db("admin");
     if(insert('elections',
       [
                'name'=>$name,
-               'etime'=>$time
+               'institute'=>$institution,
+               'date_created'=>$date
       ])){
-      echo "Election has been succefully created";
+      return true;
     }
 }
 

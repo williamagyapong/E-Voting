@@ -26,11 +26,8 @@ session_start();
 <?php
  require("config.php");
  require_once'../core/init.php';
-/*$sql ="SELECT * FROM voters";
-$result =mysql_query($sql);
-$numrow =mysql_num_rows($result);*/
 
-list($result,$pageControls, $text) = paginate('voters');
+list($voters,$pageControls, $text) = paginate('voters');
 
  if(isset($_GET['errorm'])) {
  	echo "<font size='6' color='ff0000'>"."You can't delete this voter because he 
@@ -48,6 +45,9 @@ list($result,$pageControls, $text) = paginate('voters');
 
 ?>
 <!-- display availabel voters -->
+<?php if(empty($voters)): ?>
+  <h2>No voters. <a href="register.php">Register</a> </h2>
+<?php else:?>
  <span style="font-size:14px; color:blue;">Showing voters &nbsp; &nbsp;<?php echo $text;?></span>
  <table class="table2">
    <tr>
@@ -58,7 +58,7 @@ list($result,$pageControls, $text) = paginate('voters');
      <th>Action</th>
    </tr>
    <?php 
-     foreach($result as $voter)
+     foreach($voters as $voter)
      {
    ?>
    <tr>
@@ -79,7 +79,8 @@ list($result,$pageControls, $text) = paginate('voters');
 
  <div class="pagecontrols"><?php echo $pageControls;?></div>
  <div class="print-btn"><a href="print.php?print=voters" target="_blank">Print</a></div>
-
+<?php endif;?>
+<!-- display alert dialog box -->
 <?php
 if (isset($_POST['delete'])) {
 echo "<div class='alert'>";

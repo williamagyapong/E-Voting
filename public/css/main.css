@@ -112,7 +112,7 @@ frameset{
 }
 .panel{
 	/*background: #FFD700;*/
-	height: 25px;
+	height: 40px;
 	padding-left: 30px; 
 	padding-top: 10px;
 	box-shadow: initial;
@@ -471,15 +471,15 @@ h2{
 
 .pagecontrols{
     width: 55%;
-	height: 25px;
+	height: 20px;
 	font-weight: bold;
 	font-size: 20px;
 	border: 1px solid black;
 	border-radius: 6px;
 	background: #cccccc;
 	color: blue;
-	margin-left: 10%;
-	padding: 10px 20px 10px 30px ;
+	margin-left: 13%;
+	padding: 8px 20px 8px 30px ;
 
 }
 .pagecontrols a{
@@ -488,7 +488,7 @@ h2{
 }
 .print-btn{
     width: 5%;
-	height: 25px;
+	height: 20px;
 	font-weight: bold;
 	font-size: 20px;
 	border: 1px solid black;
@@ -496,7 +496,7 @@ h2{
 	background: #cccccc;
 	color: blue;
 	position: relative;
-	left: 73%;
-	bottom: 46px;
-	padding: 10px ;
+	left: 78%;
+	bottom: 38px;
+	padding: 8px ;
 }

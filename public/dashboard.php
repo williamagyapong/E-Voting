@@ -2,6 +2,7 @@
 session_start();
  require_once '../core/init.php';
  require_once'create_db.php';
+
  auth();
 ?>
 <!DOCTYPE html>
@@ -33,7 +34,7 @@ session_start();
     		  <li class="dropdown">
     		  	<a href="#" class="dropdown n-toggle" data-toggle="dropdown" role="button" area-expanded="false">Create<span class="caret"></span></a>
     		  	  <ul class="dropdown-menu" role="menu">
-    		  	  	<li><a href="#">Election</a></li>
+    		  	  	<li><a href="election.php">Election</a></li>
     		  	  	<li class="divider"></li>
 
     		  	  	<li><a href="office.php">Offices</a></li>

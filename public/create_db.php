@@ -1,19 +1,29 @@
 <?php
  
- //$dbname = "election".$num;
- $db=mysql_connect("localhost", "root", "");
- //if(isset($_POST['create']))
- //{
+ 
+  $db=mysql_connect("localhost", "root", "");
+ 
         $sql ="CREATE DATABASE IF NOT EXISTS election ";
        if(mysql_query($sql)) {
 
         mysql_query("USE election");
+       
+        $elections = "CREATE TABLE IF NOT EXISTS elections(
+         elect_id INT UNSIGNED AUTO_INCREMENT ,
+         name VARCHAR(100),
+         institute VARCHAR(100),
+         date_created DATETIME,
+         start_time DATETIME, 
+         end_time DATETIME,
+         PRIMARY KEY(elect_id)
+        )"; 
+       
         $tablesql ="CREATE TABLE IF NOT EXISTS offices(
           id INT UNSIGNED AUTO_INCREMENT,
           office VARCHAR(40),
           status VARCHAR(10) DEFAULT'0', 
           PRIMARY KEY(id))";
-      //mysql_query($tablesql);die("success");
+      
         
         $tablesql2 ="CREATE TABLE IF NOT EXISTS candidates(
         id INT  UNSIGNED AUTO_INCREMENT,
@@ -45,7 +55,7 @@
           username VARCHAR(20),
           password VARCHAR(100),
           PRIMARY KEY(id))"; 
-        if(mysql_query($tablesql)&& mysql_query($tablesql2)&& mysql_query($tablesql3) &&
+        if(mysql_query($tablesql)&& mysql_query($tablesql2)&& mysql_query($tablesql3) && mysql_query($elections)&&
           mysql_query($tablesql4)&& mysql_query($tablesql5)) {
           //echo "The database with all the tables has been created.";
           
@@ -75,6 +85,6 @@
        
       }
 
- //}
+
  
 ?>
