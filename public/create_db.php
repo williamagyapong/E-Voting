@@ -12,6 +12,7 @@
          elect_id INT UNSIGNED AUTO_INCREMENT ,
          name VARCHAR(100),
          institute VARCHAR(100),
+         voters VARCHAR(16),
          date_created DATETIME,
          start_time DATETIME, 
          end_time DATETIME,
