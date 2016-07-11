@@ -3,7 +3,7 @@
  require_once '../core/init.php';
  auth();
  //fetch office data
- $offices = select("SELECT * FROM offices");
+ $offices = getOffices();
 ?>
 <!DOCTYPE html>
 <html>
@@ -29,7 +29,7 @@
 
      if(startedVoting()) {
         echo "<h2>Voting has started. You cannot register any candidate!</h2>";
-      } elseif(empty(getOffices())) {
+      } elseif(empty($offices) {
         echo "<h2>You can't register candidates. You must first create offices for election!";
         exit();
         
