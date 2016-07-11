@@ -1,13 +1,14 @@
 <?php 
-session_start();
+//session_start();
  require_once '../core/init.php';
  
- auth2();
+ auth2();//prevents unathorized entry
+
  //select candidates
  if(isset($_POST['select-office'])) {
    
    $_SESSION['office-id'] = $_POST['office-id']; 
-   //echo $_SESSION['office-id'];die();
+   
 }  
  if(isset($_SESSION['office-id'])) {
     $officeId = $_SESSION['office-id'];
@@ -48,15 +49,16 @@ session_start();
     
   <div class="castvote">
         <div>Candidates for <?php echo $office['office'];?> </div>
+      <?php if(empty($candidates)):?>
+        <h2>No candidate available</h2>
 
-      <form action="" method="post" onsubmit="return myAlert()">
+      <?php else:?>
+      <form action="castvote.php" method="post" onsubmit="return myAlert()">
 
       <?php
       //display candidates 
-        if(!empty($candidates)){
-       
            foreach($candidates as $candidate) {
-            //print_array($candidate); die();
+            
       ?>
          <span class="">
              <input type="radio" name = "candid" style="width:30px; height:30px; cursor:pointer;"   value="<?php echo $candidate['id'];?>">
@@ -68,13 +70,13 @@ session_start();
          
       <?php
         }
-      }
+    
       ?>
          <p><input type="submit" name="submit"  value="CAST VOTE" class="castvote-btn">
            <input type="reset" value="Reset" class="castvote-btn">
          </p>
         </form>
-
+     <?php endif; ?>
  </div>
 
  <?php
@@ -98,10 +100,7 @@ session_start();
          }
 
       }
-   $(document).ready(function(){
-    
-      
-   })
+   
 </script>
 </body>
 </html>

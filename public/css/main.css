@@ -15,7 +15,7 @@ body{
 }
 
 .table2 { 
-	width: 78%;
+	width: 80%;
 	border: thin solid #cccccc; 
 	border-radius: 10px;
     background: #ffffff; 
@@ -34,14 +34,14 @@ body{
 	 text-align: center;
 	 border-top: thick solid #eeeeee;
 	 border-bottom: thin solid #cccccc;
-	 padding: 10px;
+	 padding: 8px;
 	 border-right: 1px solid white;
 }
 
 .table2 td { 
 	border: thin solid #cccccc;
-	 padding: 10px; 
-	 font-size: 18px; 
+	 padding: 5px; 
+	 font-size: 16px; 
 	font-family: verdana;
 	
 	 /*font-weight: bold;*/
@@ -110,6 +110,17 @@ frameset{
 	background-color: cyan;
 	/*background-image: url(images/10.jpg);*/
 }
+
+.footer{
+          width: 100%;
+          padding-top: 20px;
+          height: 100px;
+          font-family: verdana;
+          text-align: center;
+          color: #fff;
+          background: #000;
+}
+
 .panel{
 	/*background: #FFD700;*/
 	height: 40px;
@@ -230,6 +241,12 @@ span a{
 .undo input{
        color: white; 
        background: red; 
+       font-weight: bold;
+}
+
+.edit input{
+       color: white; 
+       background: #FFD700; 
        font-weight: bold;
 }
 h2{
@@ -375,13 +392,13 @@ h2{
 
 .castvote{
 	width: 80%; 
-	height: auto; 
+	min-height: 400px; 
 	border-top: 30px solid #eeeeee; 
 	border-left:  10px solid #eeeeee;
 	border-bottom: 10px solid #eeeeee; 
 	border-right: 10px solid #eeeeee; 
 	border-radius: 6px;
-	margin-left: 80px;
+	margin-left: 9%;
 	margin-top:40px; 
 	margin-bottom: 30px;
 	background: white;
@@ -413,7 +430,7 @@ h2{
 .summary{
 	width: 75%; 
 	min-height: 350px; 
-	border:5px solid #F5DEB3; 
+	border:5px solid #eeeeee; 
 	margin-top:30px; 
 	margin-left: 80px;
 	margin-bottom: 25px;
@@ -422,7 +439,7 @@ h2{
 	padding-left: 60px; 
 	background: #ffffff; 
 	border-radius: 10px; 
-	border-top: 30px solid #F5DEB3;
+	border-top: 30px solid #eeeeee;
 }
 
 .summary-table{
@@ -456,7 +473,7 @@ h2{
 	margin-bottom: 30px;
 }
 
-.btn{
+.link-btn{
     color: #ff0000; 
 	font-weight: bold;
 	font-size: 1.2em;
@@ -499,4 +516,16 @@ h2{
 	left: 78%;
 	bottom: 38px;
 	padding: 8px ;
+}
+
+.mydropdown:hover>ul{
+   display: block;
+}
+.generate-id-form{
+	width: 40%;
+	position: relative;
+	left: 50%;
+	margin-left: -20%;
+	margin-top: 60px;
+	height: 150px;
 }

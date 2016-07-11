@@ -1,23 +1,28 @@
 <?php
-session_start();
+//session_start();
 require_once '../core/init.php';
 auth2();
-//require("config.php");
 
-//make a call to get offices function
+//fetch offices data
  $offices = getOffices();
- $voter = getVoter()[0];
- $numVoted = $voter['votingstatus'];
  $numOffices = count($offices);
+ $numVoted = numVoted();
+ $finished = false;
+ //echo $numVoted;die();
 
- //accepts votes and indicates that current user has voted
- if(isset($_POST['confirm'])|| ($voter['status']==1)) {
-    $finished =   TRUE;
-
-     if(updateStatus()) {
-       $updated = TRUE;
-     }
+ if(isset($_SESSION['USERNAME'])) {
+   //use the regular voters table
+   $table = "voters";
+ } else {
+   //use on the fly voters table
+   $table = "voters2";
+ 
  }
+
+ if(!electionSelected()) {
+    die("<h2>The election has been closed!</h2>");
+ }
+
 
 ?>
 
@@ -42,7 +47,6 @@ auth2();
 
 <body>
   
-
 	<div id="header"> 
 		 <?php 
 		 //echo $config_appName; ?>
@@ -52,112 +56,111 @@ auth2();
      </div>
 		 <div class="sub-text">Experience smartness in voting</div>
   </div>
-  <div class="nav-buttons">
-      <?php if(getVoter()[0]['status']==1):?>
-      <button class="mybtn"><a href="logout.php?exit">Logout</a></button> 
-    <?php endif;?>
+  
+  <!-- display content only if offices have been created -->
+  <?php if(empty($offices)):?>
+   <div class="wrapper">
+    <div class="nav-buttons">
+       <button class="link-btn"><a href="logout.php?exit">Logout</a></button>
+    </div>
+         <h2>System is not ready for voting.
+             Please consult the administrator
+         </h2>
+  </div>
+      <!-- else block of empty office condition-->
+  <?php else: ?>
 
-      <?php if(($numVoted==$numOffices)&&(getVoter()[0]['status']!=1)):?>
-      <button class="mybtn"><a href="voting.php?done">Confirm</a></button>
-     <?php endif;?>
-	    
+     <!-- initialize necessary variables -->
+       <?php 
+        $voter = getVoter($table)[0];
+        $numVoted = $voter['votingstatus'];
+
+        if(isset($_POST['confirm'])|| ($voter['status']==1)) {
+
+           if(updateStatus($table))
+              {
+                   $finished = true;
+              }
+         }
+       ?>
+  <div class="nav-buttons">
+      <?php if(getVoter($table)[0]['status']==1 ||empty($offices)):?>
+      <button class="link-btn"><a href="logout.php?exit">Logout</a></button> 
+    <?php endif;?>
 		
   </div>
   <div class="wrapper">
-	  <div class="v-status">
+     <div class="v-status">
 	     	  <h3>
 	     	  	 Voted <?php echo $numVoted;?>
 	     	  	 out of <?php echo $numOffices;?>
 	     	  </h3>
 	  </div>
   
-     <?php if(isset($finished)): ?>
-     	<?php 
-     	  //accepts voter's choices and indicates he/she has voted
-           if(isset($updated))
-           	{
-         ?> 
+   <!--  check if user is done voting -->
+     <?php if($finished == true): ?>
+     	
          <div class="confirm-msg">
-  	 	 Thank you for voting. You can now logout
+  	 	  Thank you for voting. You can now logout.
   	     </div> 
-  	     <?php		
-            }
-     	?>
-  	 
-      
+  	     
+    <!-- the else block of the finished condition -->
     <?php else: ?>
 
-   <div class="votingmain">
-		<?php
-	 if(isset($_GET['id'])){
-	 	
-	 	echo "Welcome "."<font color='white'>"."<i>".$voter['firstname']." ".$voter['lastname']."</i>".
-	 	"</font>"." to the voting page. Click the buttons below to cast your vote.";
-	 	 
-	 } 
+     <div class="votingmain">
+  		<?php
+  	 if(isset($_GET['id'])){
+  	 	
+  	 	echo "Welcome to the voting page.";
+  	 	 
+  	 }
+  	   elseif(isset($_GET['continue'])){
+  	   	  echo "Please continue voting";
+  	   }
+  	    elseif(($numVoted == $numOffices)&&($voter['status']!=1)&&($numVoted!=0)) {
+            //show voter the summary of choices for confirmation
+             redirect('summary');
+  	    }
+  	  else{
+  	  	 unset($_SESSION['office-id']);
+  	  	 echo "Continue voting.";
+  	  }
+  		?>
 
-	   elseif(isset($_GET['continue'])){
-	   	  echo "Please continue voting";
-	   }
-	   elseif (isset($_GET['ID'])) {
-	      echo "You've finished voting.<br>
-	            Click the logout button to exit.";
-	   }
-	    elseif (isset($_GET['ID2'])) {
-	    	echo "You've just undone some voting. Navigate to that link to vote again.";
-	    }
-	    elseif(isset($_GET['done']))
-	    {
-	    	 header("Location: summary.php");
-	    }
-	    elseif(($numVoted == $numOffices)&&($voter['status']!=1)){
-           echo "Voting completed. Please click the <i style='color:red'>Confirm</i> button to accept your votes.";
-	    }
-	  else{
-	  	 unset($_SESSION['office-id']);
-	  	 echo "Click on the next button to continue voting.";
-	  }
-		?>
-
-   </div>
-   <div class="positions">
-   	    <?php
-          foreach($offices as $office)
-          {
-
-        ?>
-      
-       <div class="office">
-
-           <form action="castvote.php" method="post">
-             <input type ="hidden" name="office-id" value="<?php echo $office['id'];?>">
-
-             <?php if(!empty(votedOffice($office['id']))):?>
-             <button  id="office_btn2" type="submit" name="select-office" title="Voted"><?php echo $office['office'];?></button>
-
-             <?php else:?>
-             <button  id="office_btn" type="submit" name="select-office" title="Not voted" ><?php echo $office['office'];?></button>
-             <?php endif;?>
-           </form>
-         	
-
-    
-
-         
      </div>
-      <?php
-        }
-      ?>
-   </div>
-   
+     <div class="positions">
+      
+     	    <?php
+            foreach($offices as $office)
+            {
+              $votedOffice = votedOffice($office['id']);
+          ?>
         
-	
+         <div class="office">
 
+             <form action="castvote.php" method="post">
+               <input type ="hidden" name="office-id" value="<?php echo $office['id'];?>">
+             <!-- display offices -->
+               <?php if(!empty($votedOffice)):?>
+               <button  id="office_btn2" type="submit" name="select-office" title="Voted"><?php echo $office['office'];?></button>
 
- 
+               <?php else:?>
+               <button  id="office_btn" type="submit" name="select-office" title="Not voted" ><?php echo $office['office'];?></button>
+               <?php endif;?>
+             </form>
+         
+          </div>
+        <?php
+          }
+        ?>
+        
+     </div>
+  <!-- end the finished condition-->
   <?php endif; ?>
+</div>
 
-</div>>
+<!-- end empty office condition -->
+      <?php endif;?>
   
   <?php
   require_once 'includes/footer.php';
@@ -165,6 +168,7 @@ auth2();
 
 <script type="text/javascript" src="js/jQuery.js"></script>
 <script type="text/javascript">
+//disable buttons when user is done voting
    $(document).ready(function(){
     var numVoted   = "<?php echo $numVoted?>";
     var numOffices = "<?php echo $numOffices?>";

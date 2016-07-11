@@ -1,7 +1,9 @@
 <?php 
-session_start();
+//session_start();
  require_once '../core/init.php';
  auth();
+ //fetch office data
+ $offices = select("SELECT * FROM offices");
 ?>
 <!DOCTYPE html>
 <html>
@@ -14,76 +16,85 @@ session_start();
       background-color: #c0c0c0;
     }
     </style>
+     <script type="text/javascript" src="js/custom.js"></script>
 </head>
  <body>
    <?php 
     require_once 'includes/header.php';
   ?>
 <div class="wrapper">
+  <?php if(electionSelected()):?>
+    
 <?php
 
-
-if(isset($_POST['submit']))  
-{ 
-
-   if(startedVoting()) {
+     if(startedVoting()) {
         echo "<h2>Voting has started. You cannot register any candidate!</h2>";
+      } elseif(empty(getOffices())) {
+        echo "<h2>You can't register candidates. You must first create offices for election!";
+        exit();
+        
       } else{
 
-         $fname = $_POST['fname'];
-         $lname = $_POST['lname'];
-         $office= $_POST['office'];
-         $image = $_FILES['image'];
+          if(isset($_POST['submit']))  
+          { 
+             $fname = $_POST['fname'];
+             $lname = $_POST['lname'];
+             $office= $_POST['office'];
+             $image = $_FILES['image'];
 
-        if(isset($_POST['ignore'])&&$_POST['ignore']=="yes")
-          {
-              
-              if(register($fname, $lname, $office, $image))
+            if(isset($_POST['ignore'])&&$_POST['ignore']=="yes")
               {
-                echo "Registration successful";
+                  
+                  if(register($fname, $lname, $office, $image))
+                  {
+                    echo "Registration successful";
+                  }
+                  else{
+                    echo "Please try again";
+                  }
               }
-              else{
-                echo "Please try again";
-              }
-          }
-          else
-          {
-              $fname2 = $_POST['fname2'];
-              $lname2 = $_POST['lname2'];
-              $office2= $_POST['office2'];
-              $image2 = $_FILES['image2'];
-
-              $fname3 = $_POST['fname3'];
-              $lname3 = $_POST['lname3'];
-              $office3= $_POST['office3'];
-              $image3 = $_FILES['image3'];
-
-              $fname4 = $_POST['fname4'];
-              $lname4 = $_POST['lname4'];
-              $office4= $_POST['office4'];
-              $image4 = $_FILES['image4'];
-
-              if(register($fname, $lname, $office, $image)&&
-                 register($fname2, $lname2, $office2, $image2)&&
-                 register($fname3, $lname3, $office3, $image3)&&
-                 register($fname4, $lname4, $office4, $image4)
-                 )
+              else
               {
-                echo "Registration successful";
+                  $fname2 = $_POST['fname2'];
+                  $lname2 = $_POST['lname2'];
+                  $office2= $_POST['office2'];
+                  $image2 = $_FILES['image2'];
+
+                  $fname3 = $_POST['fname3'];
+                  $lname3 = $_POST['lname3'];
+                  $office3= $_POST['office3'];
+                  $image3 = $_FILES['image3'];
+
+                  /*$fname4 = $_POST['fname4'];
+                  $lname4 = $_POST['lname4'];
+                  $office4= $_POST['office4'];
+                  $image4 = $_FILES['image4'];*/
+
+                  if(register($fname, $lname, $office, $image)&&
+                     register($fname2, $lname2, $office2, $image2)&&
+                     register($fname3, $lname3, $office3, $image3)/*&&
+                     register($fname4, $lname4, $office4, $image4)*/
+                     )
+                  {
+                    echo "Registration successful";
+                  }
+                  else{
+                    echo "Please try again";
+                  }
               }
-              else{
-                echo "Please try again";
+
+
               }
-          }
+
       }
-}
+    
 
 ?>
 
 
 <!-- <h2>CANDIDATES REGISTRATION FORM</h2> -->
 
-<form action="" method="POST" enctype="multipart/form-data">
+<form  action="candregister.php"  method="POST" enctype="multipart/form-data" >
   <fieldset class="fieldset">
     <legend>Candidates Registration Form</legend>
     <div style=" padding-left: 19%">
@@ -103,10 +114,8 @@ if(isset($_POST['submit']))
       <select name="office">
         <option value="">---select---</option>
       <?php
-         $sql = "SELECT * FROM offices";
-         $result = mysql_query($sql);
-         while($row = mysql_fetch_assoc($result)) {
-          echo "<option value='".$row['id']."'>".$row['office']."</option>";
+         foreach($offices as $office) {
+          echo "<option value='".$office['id']."'>".$office['office']."</option>";
          }
       ?> 
       
@@ -130,11 +139,9 @@ if(isset($_POST['submit']))
     <tr>
       <td style="border-bottom: 1px solid #ccc">Office</td><td style="border-bottom: 1px solid #ccc"><select name="office2">
         <option value="none">---select---</option>
-      <?php
-         $sql = "SELECT * FROM offices";
-         $result = mysql_query($sql);
-         while($row = mysql_fetch_assoc($result)) {
-          echo "<option value='".$row['id']."'>".$row['office']."</option>";
+     <?php
+         foreach($offices as $office) {
+          echo "<option value='".$office['id']."'>".$office['office']."</option>";
          }
       ?> 
       
@@ -153,37 +160,14 @@ if(isset($_POST['submit']))
       <td style="border-bottom: 1px solid #ccc">Office</td><td style="border-bottom: 1px solid #ccc"><select name="office3">
         <option value="none">---select---</option>
       <?php
-         $sql = "SELECT * FROM offices";
-         $result = mysql_query($sql);
-         while($row = mysql_fetch_assoc($result)) {
-          echo "<option value='".$row['id']."'>".$row['office']."</option>";
+         foreach($offices as $office) {
+          echo "<option value='".$office['id']."'>".$office['office']."</option>";
          }
       ?> 
       
     </select></td>
   </tr>
-   <tr>
-      <td>First Name</td><td><input type ="text" name="fname4" class="text-input"></td>
-    </tr>
-     <tr>
-      <td>Last Name</td><td><input type ="text" name="lname4" class="text-input"></td>
-    </tr>
-    <tr>
-      <td>Image</td><td><input type ="file" name="image4"></td>
-    </tr>
-    <tr>
-      <td style="border-bottom: 1px solid #ccc">Office</td><td style="border-bottom: 1px solid #ccc"><select name="office4">
-        <option value="none">---select---</option>
-      <?php
-         $sql = "SELECT * FROM offices";
-         $result = mysql_query($sql);
-         while($row = mysql_fetch_assoc($result)) {
-          echo "<option value='".$row['id']."'>".$row['office']."</option>";
-         }
-      ?> 
-      
-    </select></td>
-  </tr>
+   
      <tr>
       <td></td><td><input type ="submit" name="submit" value="REGISTER" class="submit-btn"></td>
     </tr>
@@ -192,10 +176,17 @@ if(isset($_POST['submit']))
   </fieldset>
   
   </form>
+
+
+   <?php else:?>
+     <h2>You haven't selected any election!</h2>
+   <?php endif;?>
  </div>
 
   <?php
   require_once 'includes/footer.php';
 ?>
+
+ 
 </body>
 </html>

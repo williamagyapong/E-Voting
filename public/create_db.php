@@ -1,12 +1,12 @@
 <?php
  
  
-  $db=mysql_connect("localhost", "root", "");
+  @mysql_connect("localhost", "root", "") or die("db server not found");
  
-        $sql ="CREATE DATABASE IF NOT EXISTS election ";
+        $sql ="CREATE DATABASE IF NOT EXISTS admin_db ";
        if(mysql_query($sql)) {
 
-        mysql_query("USE election");
+        mysql_query("USE admin_db");
        
         $elections = "CREATE TABLE IF NOT EXISTS elections(
          elect_id INT UNSIGNED AUTO_INCREMENT ,
@@ -18,48 +18,17 @@
          PRIMARY KEY(elect_id)
         )"; 
        
-        $tablesql ="CREATE TABLE IF NOT EXISTS offices(
-          id INT UNSIGNED AUTO_INCREMENT,
-          office VARCHAR(40),
-          status VARCHAR(10) DEFAULT'0', 
-          PRIMARY KEY(id))";
-      
         
-        $tablesql2 ="CREATE TABLE IF NOT EXISTS candidates(
-        id INT  UNSIGNED AUTO_INCREMENT,
-        firstName VARCHAR(20),
-        lastName VARCHAR(20),
-        office_id INT,
-        images VARCHAR(100),
-        num_votes VARCHAR(10) DEFAULT'0',
-        PRIMARY KEY(id))";
 
-        $tablesql3 ="CREATE TABLE IF NOT EXISTS voters(
-          id INT UNSIGNED AUTO_INCREMENT,
-          firstname VARCHAR(20),
-          lastname VARCHAR(20),
-          voterid VARCHAR(10),
-          votingstatus VARCHAR(10) DEFAULT'0',
-          status VARCHAR(5) DEFAULT'0',
-          gendar VARCHAR(16),
-          PRIMARY KEY(id))";
-        $tablesql4 ="CREATE TABLE IF NOT EXISTS voting(
-          id INT UNSIGNED AUTO_INCREMENT,
-          cand_id INT,
-          office_id INT,
-          voter_id INT,
-          dateTime DATETIME,
-          PRIMARY KEY(id))";
-        $tablesql5 ="CREATE TABLE IF NOT EXISTS admin(
+        $admin ="CREATE TABLE IF NOT EXISTS admin(
           id TINYINT UNSIGNED AUTO_INCREMENT,
           username VARCHAR(20),
           password VARCHAR(100),
           PRIMARY KEY(id))"; 
-        if(mysql_query($tablesql)&& mysql_query($tablesql2)&& mysql_query($tablesql3) && mysql_query($elections)&&
-          mysql_query($tablesql4)&& mysql_query($tablesql5)) {
+        if(mysql_query($elections)&& mysql_query($admin)) {
           //echo "The database with all the tables has been created.";
           
-           require'../core/init.php';
+           @mysql_select_db("admin_db")or die("attempting to select non existing database");
           $sql = "SELECT * FROM  admin";
           $result = mysql_query($sql);
           $numrow = mysql_num_rows($result);

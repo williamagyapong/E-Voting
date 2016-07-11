@@ -1,5 +1,4 @@
 <?php 
-session_start();
  require_once '../core/init.php';
  auth();
 ?>
@@ -21,6 +20,8 @@ session_start();
 	?>
 
 	 <div class="wrapper">
+    <?php if(electionSelected()):?>
+
 	<?php
 
 	if(isset($_POST['submit']))
@@ -75,12 +76,36 @@ session_start();
       }
 
 	}
+  elseif(isset($_POST['generate'])) {
+
+      if(createVoters()) {
+         //echo "Voters successfully created";
+         redirect('voters');
+      } else {
+        echo "Could not create voters";
+      }
+  }
 
 	?>
 
 
-<!-- <h2>VOTERS REGISTRATION FORM</h2> -->
+<!-- provide votersid generation form -->
+<?php if(isset($_SESSION['V-TYPE']) && ($_SESSION['V-TYPE']=='non-regular')):?>
+<div class="generate-id-form">
+   <form action="register.php" method="post">
+    <fieldset class="fieldset">
+       <legend>Id Generation Form</legend>
+       <input type ="text" name="voters" class="text-input" placeholder="Enter number of voters" autofocus required>
+      <br><br>
+      <input type ="submit" name="generate" value="Generate id" class="submit-btn">
 
+    </fieldset>
+    
+  </form>
+</div>
+  
+<!-- provide voters registration form -->
+<?php elseif(isset($_SESSION['V-TYPE']) && ($_SESSION['V-TYPE']=='regular')):?>
 <form action="register.php" method="POST">
   <fieldset class="fieldset">
   	 <legend>Voters Registration Form</legend>
@@ -153,6 +178,15 @@ session_start();
   </fieldset>
   
 </form>
+<!-- end if condition-->
+<?php endif; ?>
+
+
+<?php else:?>
+  <!-- no election id exists -->
+   <h2>You haven't selected any election!</h2>
+<?php endif;?>
+
 </div>
 <?php
   require_once 'includes/footer.php';

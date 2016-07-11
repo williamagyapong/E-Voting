@@ -1,16 +1,4 @@
-<?php
-require_once '../core/init.php';
-?>
 
-<!DOCTYPE html>
-<html>
-<head>
-<title></title>
-<style type="text/css">
-
-</style>
-</head>
-<body>
 	<div id="header"> 
 	   <?php 
 	    //echo $config_appName; ?>
@@ -23,5 +11,4 @@ require_once '../core/init.php';
 	<div class="panel">
 		<a href="voting.php"><button class="panel-btn">Back</button></a>
 	</div>
-</body>
-</html>
+

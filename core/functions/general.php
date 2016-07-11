@@ -15,6 +15,14 @@ function escape($str)
 }
 
 
+function electionSelected() {
+	if(isset($_SESSION['ELECTID'])) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
 function redirect($destination)
 {
    header("Location: {$destination}.php");

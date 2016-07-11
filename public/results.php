@@ -1,5 +1,5 @@
 <?php
- session_start();
+ //session_start();
   require_once'../core/init.php';
   auth();
   $offices = getOffices(); 
@@ -35,6 +35,10 @@
   ?>
     
  <div class="wrapper">
+    <?php if(electionSelected()):
+      
+    ?>
+      
       <?php if(startedVoting()):?>
     <div class="result">
       Election Results
@@ -51,12 +55,15 @@
         </tr>
        </table>
     </div>
+    <?php if(isVoting()):?>
+      <h2>Can't display results now. Someone is currently voting ! </h2>
+    <?php else: ?>
     <div class="">
       <ul>
        <hr>
        <?php
          foreach($offices as $office) {
-           $voteCast = count(voteCast($office['id']));
+           $voteCast = voteCast($office['id']);
        ?>
        
         <li><?php echo $office['office'];?></li>
@@ -96,8 +103,14 @@
      
       </ul>
     </div>
+    <?php endif;?>
 <?php else:?>
-  <h2>No result available. Voting has not started</h2>
+  <h2>No result available. </h2>
+<?php endif;?>
+
+
+<?php else:?>
+   <h2>You haven't selected any election!</h2>
 <?php endif;?>
  </div>
     

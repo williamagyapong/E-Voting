@@ -1,5 +1,5 @@
 <?php
- session_start();
+ //session_start();
  require_once '../core/init.php';
   auth();
   
@@ -55,6 +55,7 @@
 <body>
 
 	 <div class="container-fluid">
+	 <!-- display regular voters -->
 	 	<?php if(isset($_SESSION['PRINT'])&& ($_SESSION['PRINT']=='voters')): ?>
      <h3><?php echo $text;?></h3>
 	 <table class="print">
@@ -75,9 +76,36 @@
 	   </tr>   
 	    <?php };?>
 	 </table>
+    <div><?php echo $pageControls;?></div>
+
+     <!--display on the fly voters -->
+	 <?php elseif(isset($_SESSION['PRINT'])&& ($_SESSION['PRINT']=='voters2')): 
+       list($voters2,$pageControls, $text) = paginate('voters2');
+	 ?>
+     <h3><?php echo $text;?></h3>
+	 <table class="print">
+	   <tr>
+	     <th>#</th>
+	     <th>Voter id</th>
+	    
+	     
+	   </tr>
+	   <?php 
+	     $counter = 0;
+	     foreach($voters2 as $voter)
+	     {
+	     	$counter++;
+	   ?>
+	   <tr>
+	     <td><?php echo $counter;?></td>
+	     <td><?php echo $voter['voterid'];?></td>
+	     
+	   </tr>   
+	    <?php };?>
+	 </table>
 
 	 <div><?php echo $pageControls;?></div>
-
+    <!-- display candidates -->
 	 <?php elseif(isset($_SESSION['PRINT'])&& ($_SESSION['PRINT']=='candidates')):
 	     list($candidates,$pageControls, $text) = paginate('candidates',4);
 

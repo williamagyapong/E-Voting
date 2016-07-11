@@ -1,7 +1,7 @@
 <?php
-   session_start();
+   //session_start();
  require_once '../core/init.php';
- auth2();
+ auth2();//prevents unauthorized entry
  $voterId = $_SESSION['user-id'];
  $candidates = getCandidateWithOffice();
  
@@ -26,22 +26,22 @@
        Please <b>ACCEPT</b> to complete voting or <b>undo</b> to vote again.
     </span>
     
-    <table class="table2">
+    <table class="table2" style="width:85%;margin-left:6%">
        <tr>
-          <th>Name</th>
+          <th>Candidate</th>
           <th>Office</th>
-          <th>Photo</th>
-          <th>Action</th>
+          <th>Image</th>
+          <th style="border-right:thin solid #cccccc;">Action</th>
        </tr>
        <?php 
           foreach($candidates as $candInfo) {
              foreach($candInfo as $candidate) {
        ?>
        <tr>
-         <?php if(isset($candidate['firstName'], $candidate['firstName'], $candidate['images'])):?>
+         <?php if(isset($candidate['firstName'], $candidate['lastName'], $candidate['images'])):?>
           <td><?php echo $candidate['firstName']." ".$candidate['lastName'];?></td>
           <td><?php echo $candidate['office'];?></td>
-          <td><img src = "images/<?php echo $candidate['images']?>" width ="120" height="100"></td>
+          <td><img src = "images/<?php echo $candidate['images']?>" width ="160" height="150"></td>
 
           <td class="undo">
               <form action="summary.php" method="post">

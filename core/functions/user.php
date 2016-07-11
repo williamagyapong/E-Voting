@@ -1,12 +1,24 @@
 <?php
-//candidates registration function
+
+/**
+*candidate registration function
+*@param string firstname, lastname, office, image
+*@return boolean
+*/
 	function  register($fname, $lname, $office, $image)
 	{
 		//$errors = [];
+		$fname = trim($fname);
+	    $lname = trim($lname);
+	    $office = trim($office);
+
 		if(!empty($lname)&&!empty($fname)&& !empty($image)&& !empty($office))
 		{
+			//parameters are not empty
+
 		  if(uploadImage($image))
 		  {
+		  	//image uploaded; insert data
 
 		  	 if(insert('candidates',[
 		  	 	'firstname'=>ucwords($fname),
@@ -15,32 +27,43 @@
 		  	 	'images'=>$image['name']
 		  	 	]))
 		  	 {
+		  	 	//data inserted
                 return true;
 		  	 }
 		  	 else
 		  	 {
+		  	 	//data not inserted
 		  	 	return false;
 		  	 }
 	      } 
 	      else 
 	      {
+	      	  //could not upload image
 	          return false;
 	      }   
 		}
 		else{
-           
+              //function parameters are empty
 		      return false;
 			}
 
-	} //End of register function
+	} 
 
-
-//voter registration function
+/**
+*voter registration function
+*@param string firstname, lastname, gender
+*@return boolean
+*/
 function register2($fname, $lname, $gender)
 {
 	//$errors = [];
-		if(!empty(trim($lname))&& !empty(trim($fname))&& !empty(trim($gender)))
+	    $fname = trim($fname);
+	    $lname = trim($lname);
+	    $gender = trim($gender);
+		if(!empty($lname)&& !empty($fname)&& !empty($gender))
 		{
+			//parameters are not empty
+
 			//generates voter's id
 			$d = date("n").date("d");
 			$voterid = $d;
@@ -54,21 +77,25 @@ function register2($fname, $lname, $gender)
 			$idnum =mysql_num_rows($idresult);
 
 			if($idnum>0) {
+			   //voterid already exists
 			   return false;
 			}
 			else
 			{
+				//voterid has not been taken; insert data
 				if(insert('voters',[
 				   'firstname'=>ucwords($fname),
 				   'lastname'=>ucwords($lname),
-				   'gendar' =>$gender,
+				   'gendar' =>ucwords($gender),
 				   'voterid'=>$voterid
 				]))
 				{
+					//data was inserted
 					return true;
 				}
 				else
 				{
+					//data was not inserted
 					return false;
 				}
 		}
@@ -77,12 +104,170 @@ function register2($fname, $lname, $gender)
 		}
 		else 
 			{
+				//parameters are empty
 				return false;
 			}
 
 			
 }
-	
+
+function generateId() {
+	$voterid = "";
+	$d = date("n").date("d");
+			$voterid = $d;
+			for($i=0; $i<5; $i++) 
+			{ 
+				$voterid .= mt_rand(0, 9);	
+			}
+   return $voterid;
+}
+
+/**
+*voterid generator
+*@param
+*@return
+*/
+
+function createVoters()
+{
+	$voters = $_POST['voters'];
+    $count = 0;
+
+	for($i=1; $i<=$voters; $i++) {
+       $voterId = generateId();
+       $idExists = select("SELECT voterid FROM voters2 WHERE voterid = $voterId");
+       if(empty($idExists)) {
+         
+          insert('voters2',[
+       	       'voterid'=>$voterId
+       	  ]);
+       	  $count++;
+    }
+       
+	}
+
+	if($count == $voters) {
+		return true;
+	}
+}
+
+/**
+* voterLogin function
+*@param string $table
+*@return 
+*/
+function voterLogin() {
+   if(isset($_POST['login'])) {
+	 	 if(empty($_POST['id'])) {
+	 	 	echo "<h3>Please enter your voter's id</h3>";
+	 	 	return;
+	 	 } else{
+	 	 	
+	 	 	$id = $_POST['id'];
+	 	 	//regular voters' data row
+            $row = select("SELECT * FROM `voters` WHERE  `voterid` = '$id'");
+            //on-the-fly-voters data row
+            $row2 = select("SELECT * FROM `voters2` WHERE  `voterid` = '$id'");
+            $numRows = count($row);
+            $numRows2 = count($row2);
+
+	 	 	
+	 	 	  if($numRows==1) {
+	 	 	  	  $row = $row[0];
+	 	 	  	  if ($row['status']==1) {
+	 	 	  	  	 echo "<h2>"."Sorry, you have already voted"."</h2>";
+	 	 	  	  	 return;
+	 	 	  	  }else {
+	 	 	  	 
+	 	 	  	$_SESSION['USERNAME'] =$row['firstname'];
+	 	 	  	$_SESSION['user-id'] = $row['id'];
+	 	 	  	$_SESSION['ID'] =$row['voterid'];
+
+	 	 	  	if ($_SESSION['ID']==TRUE) {
+
+	 	 	  		$voterRow =select("SELECT id FROM voters WHERE voterid='".$_SESSION['ID']."'
+	 	 	  		 AND status='0'")[0];
+		 
+
+		 $query2 =select("SELECT voter_id FROM voting WHERE voter_id=".$voterRow['id'])[0];
+		 $numVoted = count($query2);
+
+		 $query3 = select("SELECT id FROM offices");
+		 $numOffices = count($query3);
+
+		          if ($numVoted==$numOffices && $numVoted!=0) {
+		             //allows voter to confirm his/her previous votes
+		             header("Location: summary.php");
+		          }  
+		          elseif($numVoted!=$numOffices&& $numVoted!=0){
+		          	//allows voter to continue from where he/she stoppped
+	 	 	  	    header("Location: voting.php?continue");
+	 	 	    }
+	 	 	    elseif($numVoted==0){
+	 	 	    	//logs the new voter onto the voting page
+	 	 	    	$id = $_SESSION['user-id'];
+	 	 	      header("Location: voting.php?id=$id");
+	 	 	    }
+	 	 	} else {
+	 	 		// session variable ID doesn't exists
+	 	 	}
+
+	 	         }
+
+	 	   } 
+	 	   //handle on the fly voter login
+	 	   elseif($numRows2==1) {
+	 	   	     $row2 = $row2[0];
+	 	 	  	 if ($row2['status']==1) {
+	 	 	  	  	 echo "<h2>"."Sorry, you have already voted"."</h2>";
+	 	 	  	  	 return;
+	 	 	  	  }else {
+	 	 	  	 
+		 	 	  	$_SESSION['user-id'] = $row2['id'];
+		 	 	  	$_SESSION['ID'] =$row2['voterid'];
+
+		 	 	  	if ($_SESSION['ID']==TRUE) {
+
+		 	 	  		$voterRow =select("SELECT id FROM voters2 WHERE voterid='".$_SESSION['ID']."'
+		 	 	  		 AND status='0'")[0];
+			 
+
+			 $query2 =select("SELECT voter_id FROM voting2 WHERE voter_id=".$voterRow['id'])[0];
+			 $numVoted = count($query2);
+
+			 $query3 = select("SELECT id FROM offices");
+			 $numOffices = count($query3);
+
+			          if ($numVoted==$numOffices && $numVoted!=0) {
+			             //allows voter to confirm his/her previous votes
+			             header("Location: summary.php");
+			          }  
+			          elseif($numVoted!=$numOffices&& $numVoted!=0){
+			          	//allows voter to continue from where he/she stoppped
+		 	 	  	    header("Location: voting.php?continue");
+		 	 	    }
+		 	 	    elseif($numVoted==0){
+		 	 	    	//logs the new voter onto the voting page
+		 	 	    	$id = $_SESSION['user-id'];
+		 	 	      header("Location: voting.php?id=$id");
+		 	 	    }
+		 	 	} else {
+		 	 		// session variable ID doesn't exists
+		 	 	}
+
+		 	         }
+
+		 	   } elseif($numRows==0 && $numRows2==0) {
+		 	   	   echo "<h2>Incorrect voter id. Try again.</h2>";
+		 	   	   return;
+		 	   }
+	     }
+	}   
+}
+
+
+
+
  function login($username, $password, $table="users")
    
  {
@@ -112,19 +297,6 @@ function register2($fname, $lname, $gender)
  	    } 
  	    return array(false, $errors);
  }
-
-
-
-function isLoggedIn()
-{
-	return isset($_SESSION['ADMIN']);
-}
-
-/*function auth()
-{
-	if(!isLoggedIn())
-		redirect('index');
-}*/
 
 
 function changePassword($userId, $prevPass, $newPass1, $newPass2)
@@ -189,17 +361,104 @@ function auth2()
 		redirect('login');
 	}
 }
-function getVoter()
+
+function getVoter($table,$id=null)
 {
-	$loginId = $_SESSION['user-id'];
-	return select("SELECT * FROM voters WHERE id = ".$loginId);
+	
+	if($id) {
+		
+		return select("SELECT * FROM $table WHERE id = ".$id);
+	}else {
+		$loginId = $_SESSION['user-id'];
+		return select("SELECT * FROM $table WHERE id = ".$loginId);
+	}
+	
 	
 }
 
+/**
+*retrieve available candidates or specific candidate 
+*@param 
+*@return array
+*/
+function getCandidate($id = null)
+{
 
- function updateStatus()
+   if($id) {
+		
+		return select("SELECT offices.office,candidates.* FROM offices, candidates WHERE candidates.id = $id AND candidates.office_id= offices.id");
+	}else {
+
+		return select("SELECT offices.office,candidates.* FROM offices, candidates WHERE candidates.office_id= offices.id");
+	}
+}
+//print_array(getCandidate(3)); die();
+/**
+*retrieve available offices or specific office
+*@param 
+*@return array
+*/
+function getOffices($id= "*")
  {
- 	if(mysql_query("UPDATE `voters` SET `status`=1 WHERE `id`=".$_SESSION['user-id']))
+ 	if($id== "*")
+ 	{
+ 		return select("SELECT * FROM offices ORDER BY office ASC");
+ 	}
+ 	else
+ 	{
+ 		return select("SELECT * FROM offices WHERE id ='$id' ORDER BY office ASC");
+ 	}
+ }
+
+/**
+*retrieve candidates by the office specified
+*@param 
+*@return array
+*/
+ function getCandidateByOffice($officeid = "*")
+ {
+    if($officeid== "*")
+ 	{
+ 		return select("SELECT * FROM `candidates`");
+ 	}
+ 	else
+ 	{
+ 		return select("SELECT * FROM `candidates` WHERE `office_id` ='$officeid'");
+ 	}
+ }
+
+/**
+*retrieve candidates the active voter voted for
+*@param 
+*@return array
+*/
+ function getCandidateWithOffice()
+ {
+ 	$data = [];
+ 	$voterId = $_SESSION['user-id'];
+  if(isset($_SESSION['USERNAME'])) {
+    $table2 = "voting";
+  } else {
+    $table2 = "voting2";
+  }
+ 	$row = select("SELECT * FROM $table2 WHERE `voter_id`='$voterId'");
+ 	foreach($row as $ids)
+ 	{
+ 		$data[] = select("SELECT offices.*,candidates.* FROM offices, candidates WHERE candidates.id=".$ids['cand_id']." AND offices.id=".$ids['office_id']);
+
+    if($ids['cand_id']==0) {
+
+       $data[] = select("SELECT * FROM `offices` WHERE `id`=".$ids['office_id']);
+    }
+ 	}
+
+ 	return $data;
+ }
+
+
+ function updateStatus($table)
+ {
+ 	if(mysql_query("UPDATE $table SET `status`=1 WHERE `id`=".$_SESSION['user-id']))
  	{
 
  		return true;
@@ -209,3 +468,4 @@ function getVoter()
  		return false;
  	}
  }
+

@@ -6,6 +6,8 @@ date_default_timezone_set("UTC");
     require_once "functions/user.php";
     require_once 'functions/voting.php';
   
-     //echo count(voteCast(0)); die();
+    
+    
+    //print_array($_SESSION); die();
     
     

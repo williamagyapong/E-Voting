@@ -1,7 +1,8 @@
 <?php 
 session_start();
-  require_once'create_db.php';
-  require_once '../core/init.php';
+//creates the admin database if not existing
+require_once'create_db.php'; 
+require_once '../core/config.php';
   
   
 ?>

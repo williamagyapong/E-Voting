@@ -1,9 +1,26 @@
 <?php 
 session_start();
- require_once '../core/init.php';
+ require '../core/config.php';
+ //require_once '../core/init.php';
  require_once'create_db.php';
+ //free session variables
+   unset($_SESSION['EDIT']);
+   unset($_SESSION['EDIT-ID']);
+   
 
- auth();
+ auth(); //prevents unauthorized entry
+ //print_array($_SESSION);die();
+ if(isset($_GET['electid'])) {
+    
+    //set election session variable to switch between elections
+     $_SESSION['ELECTID'] = $_GET['electid'];
+     
+ } 
+ if(isset($_SESSION['ELECTID'])) {
+    $isON = $_SESSION['ELECTID'];
+ }else{
+    $isON = 0;//zero means no
+ }
 ?>
 <!DOCTYPE html>
 <html>
@@ -27,6 +44,23 @@ session_start();
     
   ?>
  <div class="wrapper">
+    <div>
+       <h2>
+       <!-- destroy election upon request -->
+         <?php 
+            if(isset($_GET['destroy'])) {
+                destroyElection();
+            }
+         ?>
+      </h2>
+    </div>
+    <!-- display selected election -->
+    <?php if(isset($_SESSION['ELECTID'])):?>
+    
+    <center>
+        <h2><?php echo getElection($_SESSION['ELECTID'])[0]['name'];?></h2>
+    </center>
+    <?php endif; ?>
     <nav class="navbar navbar-default" role="navigation">
     	<div class="container-fluid">
     		
@@ -34,7 +68,7 @@ session_start();
     		  <li class="dropdown">
     		  	<a href="#" class="dropdown n-toggle" data-toggle="dropdown" role="button" area-expanded="false">Create<span class="caret"></span></a>
     		  	  <ul class="dropdown-menu" role="menu">
-    		  	  	<li><a href="election.php">Election</a></li>
+    		  	  	<li><a href="create-elect.php">Election</a></li>
     		  	  	<li class="divider"></li>
 
     		  	  	<li><a href="office.php">Offices</a></li>
@@ -48,7 +82,9 @@ session_start();
     		  	  	<li class="divider"></li>
 
     		  	  	<li><a href="register.php">Voters</a></li>
-    		  	  </ul>
+                    </ul>
+                </li>
+    		  	
     		  </li>
 
     		  <li class="dropdown">
@@ -61,32 +97,48 @@ session_start();
     		  	  	<li class="divider"></li>
 
     		  	  	<li><a href="voters.php">Voters</a></li>
-    		  	  	<li class="divider"></li>
-
+                    <li class="divider"></li>
+                    
     		  	  	<li><a href="results.php">Results</a></li>
     		  	  	
     		  	  </ul>
     		  </li>
 
-    		  <li><a href="login.php" target="_blank">Voting Section</a></li>
+    		  <li>
+                <a href="login.php" target="_blank">Voting Section</a>
+                 </li>
 
     		  <li class="dropdown">
     		  	<a href="#" class="dropdown n-toggle" data-toggle="dropdown" role="button" area-expanded="false">Settings<span class="caret"></span></a>
     		  	  <ul class="dropdown-menu" role="menu">
-    		  	  	<li><a href="reset.php">Reset Election</a></li>
-    		  	  	<li class="divider"></li>
-
-    		  	  	<li><a href="#">Select Election</a></li>
-    		  	  	<li class="divider"></li>
     		  	  	
+                  <li>  <a href="#" data-toggle="modal" aria-controls="collapse-post" data-target="#elections">
+              <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>
+              <span class="hidden-xs hidden-sm">Select Election</span>
+              </a></li>
+    		
+                    <li class="divider"></li>
+                    <li><a href="logout.php?close">Close Election</a></li>
+                    <li class="divider"></li>
+
+                    <li><a href="dashboard.php?destroy" onclick="return submitAlert()">Destroy Election</a></li>
+                    <li class="divider"></li>
+
+                    <li><a href="control.php?clear" onclick="return submitAlert2()">Reset Voting</a></li>
+
+                    
     		  	  </ul>
     		  </li>
 
     		  <li class="dropdown">
     		  	<a href="#" class="dropdown n-toggle" data-toggle="dropdown" role="button" area-expanded="false">Administrator<span class="caret"></span></a>
     		  	  <ul class="dropdown-menu" role="menu">
+                    <li><a href="#">Logged in as: <?php echo $_SESSION['ADMIN'] ?></a></li>
+                    <li class="divider"></li>
+
     		  	  	<li><a href="adminlogout.php">Logout</a></li>
     		  	  	<li class="divider"></li>
+
     		  	  	<li><a href="changepass.php">Change Password</a></li>
     		  	  </ul>
     		  </li>
@@ -95,17 +147,99 @@ session_start();
     		</ul>
     	</div>
     </nav>
-   
+    
+    
+    <!-- Modal for tests taken-->
+    <div id="elections" class="modal fade" role="dialog"  data-backdrop=false >
+      <div class="modal-dialog" style="width:90%">
+
+        <!-- Modal content-->
+        <div class="modal-content">  
+          <div class="modal-header ">
+            <h3 class="modal-title title" style="text-align:center; color:blue">Available Elections</h3>
+          </div>
+          <div class="prev-modal-body">
+             <table class="table2" style="width:88%; margin-left:5.5%;" title="Click on name of election to select it">
+               <tr>
+                 <th>Name</th>
+                 <th>Institution</th>
+                 <th>Voters</th>
+                 <th style="border-right:#ccc">Action</th>
+               </tr>
+             
+            <?php
+               $elections = getElection();
+               foreach($elections as $election) {
+            ?>
+            <!-- display content-->
+            <tr>
+                <td title="click to select">
+                 <ul class="nav navbar-nav">
+                   <li>
+                    <a href="create-elect.php?electid=<?php echo $election['elect_id']?>"><?php echo $election['name'] ?></a>
+                    </li>
+                 </ul>
+                </td>
+                <td><?php echo $election['institute']?></td>
+                <td><?php echo $election['voters']?></td>
+
+                <td class="edit">
+                    <form action= "create-elect.php" method="post">
+                     <input type="hidden" name="id" value = "<?php echo $election['elect_id'];?>">
+                     <input type ="submit" name="edit-election" value="[ Edit ]" title="Make changes">
+                   </form>
+               </td>
+            </tr>
+          <?php } ?>
+          </table>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+     </div>
+    </div> 
+  </div>
  </div>
 
 <?php
-//require("create_db.php");
+
 require_once 'includes/footer.php';
 ?>
-
-
-    <script type="text/javascript" src = "js/jquery-2.1.4.min.js"></script>
+    
+    <script type="text/javascript" src = "js/jQuery.js"></script>
     
     <script src="js/bootstrap.min.js"></script>
+
+    <script type="text/javascript">
+
+         
+
+        function submitAlert() {
+            
+            var isON = "<?php echo $isON ?>";
+            
+            if(isON>0) {
+               if(confirm("You are about to destroy a complete election ! Click OK to proceed or Cancel to stop.")) {
+                return true;
+            } else {
+                return false;
+            }
+            }else if(isON ==0){
+               alert("Sorry, there is no election to destroy");
+               return false;
+            }
+            
+        }
+
+         function submitAlert2() {
+
+            if(confirm("Doing this will clear all votings if any. Click OK to continue or Cancel to stop !")) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+    </script>
 </body>
 </html>

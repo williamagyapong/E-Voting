@@ -1,5 +1,5 @@
 <?php 
-session_start();
+//session_start();
  require_once '../core/init.php';
  auth();
 ?>
@@ -20,6 +20,8 @@ session_start();
     require_once 'includes/header.php';
   ?>
  	<div class="wrapper">
+   <?php if(electionSelected()):?>
+    
 <?php
 
   if (isset($_POST['create'])) {
@@ -108,7 +110,9 @@ session_start();
     </fieldset> 
   </form>
 
-  
+  <?php else:?>
+   <h2>You haven't selected any election!</h2>
+  <?php endif;?>
 </div>
   <?php
   require_once 'includes/footer.php';

@@ -1,17 +1,4 @@
-<?php
-require("../core/init.php");
-?>
 
-<!DOCTYPE html>
-<html>
-<head>
-<title></title>
-<style type="text/css">
-
-
-</style>
-</head>
-<body>
 	<div id="header"> 
 	   
 	   <div class="logo">
@@ -25,5 +12,4 @@ require("../core/init.php");
 	<div class="panel">
 		<a href="dashboard.php" ><button class="panel-btn">Control Panel</button></a>
 	</div>
-</body>
-</html>
+

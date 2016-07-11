@@ -1,26 +1,24 @@
 <?php
+/*
+*this page handles deletions
+*the page never displays to the user hence no html needed
+*/
 require_once'../core/init.php';
 // delete a voter upon yes response
  if (isset($_POST['vyes'])) {
 
- 	$id =$_POST['id'];
-
-    $query ="SELECT status, votingstatus, gendar FROM voters WHERE id=".$id;
-    $result = mysql_query($query);
-    $row =mysql_fetch_assoc($result);
-    //makes deletion possible only when voting hasn't started
-    if(($row['status']==1)&&($row['votingstatus']!==0)) {
-    	if ($row['gendar']=='Male') {
-            //post back to the voters' page with male related error
-    		header("Location: voters.php?errorm");
-    	}
-    	elseif ($row['gendar']=='Female') {
-            //post back to the voters' page with female related error
-    		header("Location:voters.php?errorf");
-
-    	}
-    	    } else{ 
-    $sql ="DELETE FROM voters WHERE id=".$id;
+     if(isset($_SESSION['V-TYPE']) && ($_SESSION['V-TYPE']=="regular")) {
+       $table = "voters";
+   } elseif(isset($_SESSION['V-TYPE']) && ($_SESSION['V-TYPE']=="non-regular")) {
+     $table = "voters2";
+   }
+    $id =$_POST['id'];
+ 	
+    //allow deletion only when voting hasn't started
+    if(startedVoting()==true) {
+    	 header("Location: voters.php?error");
+    } else{ 
+    $sql ="DELETE FROM $table WHERE id=".$id;
      if(mysql_query($sql)) {
         //post back to the voters' page with success message
      	header("Location: voters.php?del");
@@ -38,10 +36,8 @@ require_once'../core/init.php';
   elseif (isset($_POST['yes'])) {
      $id =$_POST['id'];
 
-     $candsql ="SELECT num_votes FROM candidates WHERE id=".$id;
-     $candresult = mysql_query($candsql);
-     $candrow = mysql_fetch_assoc($candresult);
-     if($candrow['num_votes']==0) {
+     
+     if(startedVoting() == false) {
 
         $delsql = "DELETE FROM candidates WHERE id=".$id;
         if (mysql_query($delsql)) {

@@ -1,54 +1,16 @@
 <?php
+// initialise necessary variables
  
- function getOffices($id= "*")
- {
- 	if($id== "*")
- 	{
- 		return select("SELECT * FROM offices ORDER BY office ASC");
- 	}
- 	else
- 	{
- 		return select("SELECT * FROM offices WHERE id ='$id' ORDER BY office ASC");
- 	}
- }
-
- function getCandidateByOffice($officeid = "*")
- {
-    if($officeid== "*")
- 	{
- 		return select("SELECT * FROM `candidates`");
- 	}
- 	else
- 	{
- 		return select("SELECT * FROM `candidates` WHERE `office_id` ='$officeid'");
- 	}
- }
-
-
- function getCandidateWithOffice()
- {
- 	$data = [];
- 	$voterId = $_SESSION['user-id'];
- 	$row = select("SELECT * FROM `voting` WHERE `voter_id`='$voterId'");
- 	foreach($row as $ids)
- 	{
- 		$data[] = select("SELECT offices.*,candidates.* FROM offices, candidates WHERE candidates.id=".$ids['cand_id']." AND offices.id=".$ids['office_id']);
-
-    if($ids['cand_id']==0) {
-
-       $data[] = select("SELECT * FROM `offices` WHERE `id`=".$ids['office_id']);
-    }
- 	}
-
- 	return $data;
- }
-
-
  function unVotedOffice()
  {
    $data = [];
    $voterId = $_SESSION['user-id'];
-   $row = select("SELECT * FROM `voting` WHERE `voter_id`='$voterId' AND `cand_id`=0");
+   if(isset($_SESSION['USERNAME'])) {
+    $table2 = "voting";
+  } else {
+    $table2 = "voting2";
+  }
+   $row = select("SELECT * FROM $table2 WHERE `voter_id`='$voterId' AND `cand_id`=0");
    foreach($row as $id) {
      $data[] = select("SELECT * FROM `offices` WHERE `id`=".$id['office_id']);
    }
@@ -59,23 +21,65 @@
 
 function voteCast($officeId)
 {
-	return select("SELECT * FROM `voting` WHERE `office_id`='$officeId' AND `cand_id` !=0");
+  if(isset($_SESSION['V-TYPE']) && ($_SESSION['V-TYPE']=="regular")) {
+      $table = 'voting';
+  } elseif(isset($_SESSION['V-TYPE']) && ($_SESSION['V-TYPE']=="non-regular")) {
+      $table = 'voting2';
+  }
+	return count(select("SELECT * FROM $table WHERE `office_id`='$officeId' AND `cand_id` !=0"));
 }
+
+
 //echo count(voteCast(1));die();
 function totalVoters()
 {
-	return count(select("SELECT * FROM `voters`"));
+  if(isset($_SESSION['V-TYPE']) && ($_SESSION['V-TYPE']=="regular")) {
+      $table = 'voters';
+  } elseif(isset($_SESSION['V-TYPE']) && ($_SESSION['V-TYPE']=="non-regular")) {
+      $table = 'voters2';
+  }
+	return count(select("SELECT * FROM $table"));
+}
+
+
+function numVoted() 
+{
+  
+  $loginId = $_SESSION['user-id'];
+  if(isset($_SESSION['USERNAME'])) {
+    $table = "voters";
+  } else {
+    $table = "voters2";
+  }
+
+  $row = select("SELECT * FROM $table WHERE id = ".$loginId);
+  foreach($row as $voter) {
+     return $voter['votingstatus'];
+  }
 }
 
 function votedVoters()
 {
-	return count(select("SELECT * FROM `voters` WHERE `status`=1"));
+  if(isset($_SESSION['V-TYPE']) && ($_SESSION['V-TYPE']=="regular")) {
+      $table = 'voters';
+  } elseif(isset($_SESSION['V-TYPE']) && ($_SESSION['V-TYPE']=="non-regular")) {
+      $table = 'voters2';
+  }
+  
+
+	return count(select("SELECT * FROM $table WHERE `status`=1"));
 }
 
 function VotedOffice($officeId)
 {
+  if(isset($_SESSION['USERNAME'])) {
+    $table = "voting";
+  } else {
+    $table = "voting2";
+  }
+
   $voterId = $_SESSION['user-id'];
-  return select("SELECT `office_id` FROM `voting` WHERE `voter_id`='{$voterId}' AND `office_id` = '{$officeId}'");
+  return select("SELECT `office_id` FROM $table WHERE `voter_id`='{$voterId}' AND `office_id` = '{$officeId}'");
 }
 
  function getResults()
@@ -92,8 +96,15 @@ function VotedOffice($officeId)
 
  function startedVoting()
  {
- 	$row = select("SELECT * FROM `voting`");
+   $table ='';//to prevent problem of undefined variable table
+   if(isset($_SESSION['V-TYPE']) && ($_SESSION['V-TYPE']=="regular")) {
+    $table = 'voting';
+} elseif(isset($_SESSION['V-TYPE']) && ($_SESSION['V-TYPE']=="non-regular")) {
+    $table = 'voting2';
+}
+ 	$row = select("SELECT id FROM $table");
  	if(count($row)>0){
+
  		return true;
  	} else{
  		return false;
@@ -101,42 +112,68 @@ function VotedOffice($officeId)
 
  }
 
+
+function isVoting()
+{
+   if(isset($_SESSION['user-id'])) {
+      return true;
+   } else {
+      return false;
+   }
+}
+
  function hasVoted($officeId)
  {
+  if(isset($_SESSION['USERNAME'])) {
+    $table2 = "voting";
+  } else {
+    $table2 = "voting2";
+  }
+
  	 $voterId = $_SESSION['user-id'];
- 	 $row = select("SELECT * FROM voting WHERE voter_id='{voterId}' AND office_id = '{$officeId}'");
+ 	 $row = select("SELECT * FROM $table2 WHERE voter_id='{voterId}' AND office_id = '{$officeId}'");
  	 if(count($row)>=1){
  	 	return true;
  	 } else{
  	 	return false;
  	 }
  }
-/* 
-  
+
+/**
+*@param table1|voters table, table2|voting table
+*@return boolean
 */
  function castVote()
  {
+   
        //initialise necessary variables
        $voterId = $_SESSION['user-id'];
        $officeId =$_POST['office-id'];
        $candId   =$_POST['candid'];
+       if(isset($_SESSION['USERNAME'])) {
+        $table = "voters";
+        $table2 = "voting";
+      } else {
+          $table = "voters2";
+          $table2 = "voting2";
+      }
        //query tables  
          $office =select("SELECT * FROM offices WHERE id =".$officeId)[0];
            
-         $voterInfo = select("SELECT id, votingStatus FROM voters WHERE voterid='".$_SESSION['ID']."'");
+         $voterInfo = select("SELECT id, votingstatus FROM $table WHERE voterid='".$_SESSION['ID']."'");
            
            //selects data from the offices table
            $offices = select("SELECT * FROM offices");
            
            //selects data from the voting table to check if user has already voted
-           $votingInfo = select("SELECT * FROM `voting` WHERE `voter_id`='".$voterId."' AND office_id =
+           $votingInfo = select("SELECT * FROM $table2 WHERE `voter_id`='".$voterId."' AND office_id =
             '".$officeId."'");
            
                 if(count($votingInfo)==0) {
-                    $votesql ="INSERT INTO voting(cand_id, voter_id, office_id, dateTime)
+                    $votesql ="INSERT INTO $table2(cand_id, voter_id, office_id, dateTime)
        	            VALUES('$candId','".$voterId."', '".$officeId."', NOW())";
                     
-                    $update = "UPDATE voters SET votingstatus= votingstatus + 1 WHERE id ='".$voterId."'";
+                    $update = "UPDATE $table SET votingstatus= votingstatus + 1 WHERE id ='".$voterId."'";
 
                      $update2 ="UPDATE candidates SET num_votes =num_votes+1 WHERE id ='{$candId}'";
 
@@ -149,4 +186,35 @@ function VotedOffice($officeId)
                  return false;
          } 
  }
+
+
+
+ function clearVoting() 
+ { 
+    if(isset($_SESSION['V-TYPE']) && ($_SESSION['V-TYPE']=="regular")) {
+    $table = 'voting';
+    $table2 = 'voters';
+  } elseif(isset($_SESSION['V-TYPE']) && ($_SESSION['V-TYPE']=="non-regular")) {
+      $table = 'voting2';
+      $table2 = 'voters2';
+  }
+
+    if(mysql_query("DROP TABLE $table")) {
+
+        $sql ="UPDATE candidates SET num_votes=0";
+        $sql2="UPDATE $table2 SET status = 0, votingstatus = 0";
+
+        $tablesql ="CREATE TABLE IF NOT EXISTS $table(
+          id INT UNSIGNED AUTO_INCREMENT,
+          cand_id INT,
+          office_id INT,
+          voter_id INT,
+          dateTime DATETIME,
+          PRIMARY KEY(id))";
+        if(mysql_query($tablesql) && mysql_query($sql)&&mysql_query($sql2)) {
+            return true;
+        }
+    }
+ }
+ //clearVoting('voting');
 ?>
