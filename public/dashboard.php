@@ -1,15 +1,19 @@
 <?php 
 session_start();
+/*
+*requirements
+*/
  require '../core/config.php';
- //require_once '../core/init.php';
  require_once'create_db.php';
+ 
  //free session variables
    unset($_SESSION['EDIT']);
    unset($_SESSION['EDIT-ID']);
    
-
  auth(); //prevents unauthorized entry
- //print_array($_SESSION);die();
+ 
+ $elections = getElection();//initialize election variable
+ 
  if(isset($_GET['electid'])) {
     
     //set election session variable to switch between elections
@@ -17,9 +21,9 @@ session_start();
      
  } 
  if(isset($_SESSION['ELECTID'])) {
-    $isON = $_SESSION['ELECTID'];
+    $isON = $_SESSION['ELECTID'];//use as stamp to track active election
  }else{
-    $isON = 0;//zero means no
+    $isON = 0;//zero means election has not been selected
  }
 ?>
 <!DOCTYPE html>
@@ -149,7 +153,7 @@ session_start();
     </nav>
     
     
-    <!-- Modal for tests taken-->
+    <!-- Modal for displaying elections -->
     <div id="elections" class="modal fade" role="dialog"  data-backdrop=false >
       <div class="modal-dialog" style="width:90%">
 
@@ -159,6 +163,10 @@ session_start();
             <h3 class="modal-title title" style="text-align:center; color:blue">Available Elections</h3>
           </div>
           <div class="prev-modal-body">
+             <?php if(empty($elections)): ?>
+               <h2>No Elections</h2>
+               <a href = "creat-elect.php">create election</a>
+             <?php else:?>
              <table class="table2" style="width:88%; margin-left:5.5%;" title="Click on name of election to select it">
                <tr>
                  <th>Name</th>
@@ -168,7 +176,6 @@ session_start();
                </tr>
              
             <?php
-               $elections = getElection();
                foreach($elections as $election) {
             ?>
             <!-- display content-->
@@ -192,6 +199,7 @@ session_start();
             </tr>
           <?php } ?>
           </table>
+          <?php endif; ?>
         </div>
         <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
