@@ -140,10 +140,10 @@ session_start();
                     <li><a href="#">Logged in as: <?php echo $_SESSION['ADMIN'] ?></a></li>
                     <li class="divider"></li>
 
-    		  	  	<li><a href="adminlogout.php">Logout</a></li>
-    		  	  	<li class="divider"></li>
-
     		  	  	<li><a href="changepass.php">Change Password</a></li>
+    		  	  	<li class="divider"></li>
+            <li><a href="adminlogout.php">Logout</a></li>
+    		  	  	
     		  	  </ul>
     		  </li>
 
@@ -165,7 +165,7 @@ session_start();
           <div class="prev-modal-body">
              <?php if(empty($elections)): ?>
                <h2>No Elections</h2>
-               <a href = "creat-elect.php">create election</a>
+               <a href = "create-elect.php">create election</a>
              <?php else:?>
              <table class="table2" style="width:88%; margin-left:5.5%;" title="Click on name of election to select it">
                <tr>
