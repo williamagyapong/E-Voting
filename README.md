@@ -1,4 +1,4 @@
 # E-Voting
 For electronic voting
 
-This is an updated version of my election software, with major emphasis on improving the aesthetics. 
+This is an updated version of my election software, with major emphasis on improving the aesthetics and allowing for multiple election instances. 
