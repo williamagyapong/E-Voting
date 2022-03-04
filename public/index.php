@@ -2,7 +2,7 @@
 session_start();
 //creates the admin database if not existing
 require_once'create_db.php'; 
-require_once '../core/config.php';
+//require_once '../core/config.php';
   
   
 ?>
@@ -49,16 +49,18 @@ require_once '../core/config.php';
         		$username =trim($_POST['username']);
         		$password =md5(trim($_POST['password']));
 
-            
+            //print_r($con);die();
         		$sql ="SELECT * FROM `admin` WHERE `username` ='$username' AND `password` ='$password'";
-        		$result = mysql_query($sql)or die(mysql_error());
-        		$numrow = mysql_num_rows($result);
+        		$result = $con->query($sql)or die('An error occurred');
+        		$numrow = $result->rowCount();
         		//echo $numrow;die();
         		 if($numrow ==1 ) {
-        		 	$row = mysql_fetch_assoc($result);
-
-        		 	$_SESSION['ADMIN'] = $row['username'];
-        		 	$_SESSION['ADMINID'] = $row['id'];
+        		 	$row = $result->fetchAll(PDO::FETCH_ASSOC);
+              foreach($row as $data) {
+                 
+                $_SESSION['ADMIN'] = $data['username'];
+                $_SESSION['ADMINID'] = $data['id'];
+              }
 
         		 	if(isset($_SESSION['ADMIN']/*, $_SESSION['ADMINID']*/))
               {

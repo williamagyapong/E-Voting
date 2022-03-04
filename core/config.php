@@ -1,16 +1,29 @@
 <?php
-@mysql_connect("localhost", "root", "") or die("db server not found");
- @mysql_select_db("admin_db")or die("attempting to select non existing database");
+//@mysql_connect("localhost", "root", "") or die("db server not found");
+ //@mysql_select_db("admin_db")or die("attempting to select non existing database");
+#using PDO 
+$host = '127.0.0.1';
+  $db = 'admin_db';
+  $user = 'root';
+  $password = '';
 
+  try{
+          $con = new PDO('mysql:host='.$host.';dbname='.$db, $user, $password);
+            //$this->_pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);  
+       } catch(PDOException $e) {
+           //die($e->getMessage());
+           exit();
+           //Redirect::to(401);//pass a system failure message
+       }
 
  // functions
 function print_array($array)
 {
-  echo '<pre>',print_r($array, true),'</pre>';
+  echo '<pre>',print_r($array, true),'</pre>';die();
 }
 
 
- function insert($table, array $data)
+ function insert($table, array $data, $con)
  {
  	          // builds  query statement
  	  $fields = '';
@@ -32,7 +45,7 @@ function print_array($array)
     $sql = 'INSERT INTO '.'`'.$table.'` '.'('.$fields.') VALUES ('.$values.')';
 
     // runs the query against database
-    $query_run = mysql_query($sql);
+    $query_run = $con->query($sql);
 
     if ($query_run) 
     {
@@ -49,17 +62,18 @@ function print_array($array)
 
 // select function begins here
 
- function select($sql)
+ function select($sql,$con)
  {
     $results = [];
 
-    if($queryrun = mysql_query($sql))
+    if($queryrun = $con->query($sql))
     {
-      while($sqlresult = mysql_fetch_assoc($queryrun))
+      return $queryrun->fetchAll();
+      /*while($sqlresult = $queryrun->fetchAll())
       {
 
         $results[] = $sqlresult;
-      }
+      }*/
 
     }
     else{
@@ -68,7 +82,9 @@ function print_array($array)
     return $results;
  }
 
-function update( $table, $id, array $data)
+
+
+function update( $table, $id, array $data, $con)
  {
     $fieldsValues ="";
     foreach($data as $field =>$value)
@@ -80,13 +96,13 @@ function update( $table, $id, array $data)
 
     $sql = "UPDATE ". '`'.$table.'` '. "SET ".$fieldsValues." WHERE `elect_id`=".$id;
 
-    if(mysql_query($sql))
+    if($con->query($sql))
     {
       return true;
     }
  }
 
- function createElection()
+ function createElection($con)
 {   
    
     $name        = ucwords($_POST['name']);
@@ -100,22 +116,22 @@ function update( $table, $id, array $data)
                'institute'=>$institution,
                'voters'=>$voters,
                'date_created'=>$date
-      ])){
+      ], $con)){
 
       	//returns the last inserted table id
-        return mysql_insert_id();
+        return $con->lastInsertId();
     }
 }
 
 
-function createdb($electId)
+function createdb($electId,$con)
 {     
  
         $electionName = 'election'.$electId;
         $sql ="CREATE DATABASE IF NOT EXISTS $electionName";
-       if(mysql_query($sql)) {
+       if($con->query($sql)) {
 
-        mysql_query("USE $electionName");
+        $con->query("USE $electionName");
        
         $tablesql ="CREATE TABLE IF NOT EXISTS offices(
           id INT UNSIGNED AUTO_INCREMENT,
@@ -167,7 +183,7 @@ function createdb($electId)
           PRIMARY KEY(id))";
 
         
-        if(mysql_query($tablesql)&& mysql_query($tablesql2)&& mysql_query($tablesql3) && mysql_query($tablesql4)&& mysql_query($tablesql5)&& mysql_query($tablesql6)) {
+        if($con->query($tablesql)&& $con->query($tablesql2)&& $con->query($tablesql3) && $con->query($tablesql4)&& $con->query($tablesql5)&& $con->query($tablesql6)) {
           return true;
       }
 
@@ -184,31 +200,31 @@ function auth()
 
 
 
-function getElection($id="")
+function getElection($id="", $con)
 { 
   if($id =="")
   {
      
-     return select("SELECT * FROM elections");
+     return select("SELECT * FROM elections",$con);
   }
  else
  {
    
-   return select("SELECT * FROM elections WHERE elect_id = '{$id}'");
+   return select("SELECT * FROM elections WHERE elect_id = '{$id}'", $con);
  }
 }
 
 
-function destroyElection()
+function destroyElection($con)
 {
   if(isset($_SESSION['ELECTID'])) {
      $electId = $_SESSION['ELECTID'];
      $db_name = "election".$_SESSION['ELECTID'];
      $query = "DROP DATABASE $db_name";
 
-     if(mysql_query($query)) {
+     if($con->query($query)) {
         //delete election records in the admin_db database
-        mysql_query("DELETE FROM elections WHERE elect_id = $electId");
+        $con->query("DELETE FROM elections WHERE elect_id = $electId");
         unset($_SESSION['ELECTID']);
         echo "Election successfully destroyed!";
         

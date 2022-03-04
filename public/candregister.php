@@ -72,8 +72,7 @@
 
                   if(register($fname, $lname, $office, $image)&&
                      register($fname2, $lname2, $office2, $image2)&&
-                     register($fname3, $lname3, $office3, $image3)/*&&
-                     register($fname4, $lname4, $office4, $image4)*/
+                     register($fname3, $lname3, $office3, $image3)
                      )
                   {
                     echo "Registration successful";

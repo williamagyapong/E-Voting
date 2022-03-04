@@ -108,7 +108,7 @@ function deleteRecord($table, $idField="id", $id)
 {
 	$sql = "DELETE FROM " .'`'.$table.'`'." WHERE ". '`'.$idField.'` = '. $id;
 	
-	if(mysql_query($sql))
+	if(DB::getInstance()->delete($table,['id','=',$id]))
 	{
 		return true;
 	}
@@ -119,7 +119,7 @@ function deleteRecord($table, $idField="id", $id)
 
 function getSettings()
 {
-	return select("SELECT * FROM settings");
+	return DB::getInstance()->select("SELECT * FROM settings")->all();
 }
 
 
@@ -170,10 +170,10 @@ function paginate($table=null, $pageRows=10, $idField='id')
 {
    if ($table)
    {  
-   	    $sql = "SELECT COUNT($idField) FROM ".'`'.$table.'`';
-	    $run = mysql_query($sql);
-	    $row = mysql_fetch_row($run);
-	    $rows = $row[0];
+   	    $sql = "SELECT {$idField} FROM ".'`'.$table.'`';
+	    //$rows = $row[0];
+	    $rows = count(DB::getInstance()->select($sql)->all());
+	   
 
       //get the last page number
       $lastPage = ceil($rows/$pageRows);
@@ -206,10 +206,10 @@ function paginate($table=null, $pageRows=10, $idField='id')
       $limit = 'LIMIT '. ($pageNum-1)*$pageRows.','.$pageRows;
       
       if($table == 'candidates') {
-      	$result = select("SELECT candidates.*,office FROM candidates, offices WHERE candidates.office_id=offices.id  ORDER BY offices.office ASC $limit");
+      	$result = DB::getInstance()->select("SELECT candidates.*,office FROM candidates, offices WHERE candidates.office_id=offices.id  ORDER BY offices.office ASC $limit")->all();
 
       } else{
-      	  $result = select("SELECT * FROM ".'`'.$table.'`'." $limit");
+      	  $result = DB::getInstance()->select("SELECT * FROM ".'`'.$table.'`'." $limit")->all();
       }
       
 

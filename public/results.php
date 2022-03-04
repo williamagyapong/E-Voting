@@ -74,7 +74,7 @@
                   
                   <th>VOTES RECEIVED</th>
     
-                  <th style="border-right:thin solid #cccccc;">%</th>
+                  <th style="border-right:thin solid #cccccc;">Percentage</th>
                 </tr>
                  <?php
                     foreach(getCandidateByOffice($office['id']) as $candidate) {
@@ -87,7 +87,7 @@
                     <td><img src="images/<?php echo $candidate['images'];?>" width="120" height="120" ></td>
                    
                     <td style="width:8%;"><?php echo $candidate['num_votes'];?></td>
-                    <td><?php echo $percent;?></td>
+                    <td><?php echo $percent.' %';?></td>
                 </tr>
 
                 <?php }?>

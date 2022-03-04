@@ -37,7 +37,7 @@
           if(isset($_POST['ignore'])&&$_POST['ignore']=="yes")
           {
             $office = ucwords($_POST['office']);
-            if(insert('offices',[
+            if(DB::getInstance()->insert('offices',[
                  'office'=>$office
               ])) echo "The action was successful";
             else {
@@ -50,13 +50,13 @@
             $office3 = ucwords($_POST['office3']);
             $office4 = ucwords($_POST['office4']);
 
-            if(insert('offices',[
+            if(DB::getInstance()->insert('offices',[
                  'office'=>$office
-              ])&& insert('offices',[
+              ])&& DB::getInstance()->insert('offices',[
                  'office'=>$office2
-              ])&& insert('offices',[
+              ])&& DB::getInstance()->insert('offices',[
                  'office'=>$office3
-              ])&& insert('offices',[
+              ])&& DB::getInstance()->insert('offices',[
                  'office'=>$office4
               ]))echo "The action was successful";
             else {

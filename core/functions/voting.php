@@ -26,7 +26,7 @@ function voteCast($officeId)
   } elseif(isset($_SESSION['V-TYPE']) && ($_SESSION['V-TYPE']=="non-regular")) {
       $table = 'voting2';
   }
-	return count(select("SELECT * FROM $table WHERE `office_id`='$officeId' AND `cand_id` !=0"));
+	return count(DB::getInstance()->select("SELECT * FROM $table WHERE `office_id`='$officeId' AND `cand_id` !=0")->all());
 }
 
 
@@ -38,7 +38,7 @@ function totalVoters()
   } elseif(isset($_SESSION['V-TYPE']) && ($_SESSION['V-TYPE']=="non-regular")) {
       $table = 'voters2';
   }
-	return count(select("SELECT * FROM $table"));
+	return count(DB::getInstance()->get($table, array())->all());
 }
 
 
@@ -52,7 +52,7 @@ function numVoted()
     $table = "voters2";
   }
 
-  $row = select("SELECT * FROM $table WHERE id = ".$loginId);
+  $row = DB::getInstance()->select("SELECT * FROM $table WHERE id = ".$loginId)->all();
   foreach($row as $voter) {
      return $voter['votingstatus'];
   }
@@ -67,7 +67,7 @@ function votedVoters()
   }
   
 
-	return count(select("SELECT * FROM $table WHERE `status`=1"));
+	return count(DB::getInstance()->select("SELECT * FROM $table WHERE `status`=1")->all());
 }
 
 function VotedOffice($officeId)
@@ -79,7 +79,7 @@ function VotedOffice($officeId)
   }
 
   $voterId = $_SESSION['user-id'];
-  return select("SELECT `office_id` FROM $table WHERE `voter_id`='{$voterId}' AND `office_id` = '{$officeId}'");
+  return DB::getInstance()->select("SELECT `office_id` FROM $table WHERE `voter_id`='{$voterId}' AND `office_id` = '{$officeId}'")->all();
 }
 
  function getResults()
@@ -102,7 +102,7 @@ function VotedOffice($officeId)
 } elseif(isset($_SESSION['V-TYPE']) && ($_SESSION['V-TYPE']=="non-regular")) {
     $table = 'voting2';
 }
- 	$row = select("SELECT id FROM $table");
+ 	$row = DB::getInstance()->select("SELECT id FROM $table")->all();
  	if(count($row)>0){
 
  		return true;
@@ -131,7 +131,7 @@ function isVoting()
   }
 
  	 $voterId = $_SESSION['user-id'];
- 	 $row = select("SELECT * FROM $table2 WHERE voter_id='{voterId}' AND office_id = '{$officeId}'");
+ 	 $row = DB::getInstance()->select("SELECT * FROM $table2 WHERE voter_id='{$voterId}' AND office_id = '{$officeId}'")->all();
  	 if(count($row)>=1){
  	 	return true;
  	 } else{
@@ -158,26 +158,29 @@ function isVoting()
           $table2 = "voting2";
       }
        //query tables  
-         $office =select("SELECT * FROM offices WHERE id =".$officeId)[0];
+         $office =DB::getInstance()->select("SELECT * FROM offices WHERE id =".$officeId)->first();
            
-         $voterInfo = select("SELECT id, votingstatus FROM $table WHERE voterid='".$_SESSION['ID']."'");
+         $voterInfo = DB::getInstance()->select("SELECT id, votingstatus FROM $table WHERE voterid='".$_SESSION['ID']."'")->all();
            
            //selects data from the offices table
-           $offices = select("SELECT * FROM offices");
+           $offices = DB::getInstance()->get("offices", array())->all();
            
            //selects data from the voting table to check if user has already voted
-           $votingInfo = select("SELECT * FROM $table2 WHERE `voter_id`='".$voterId."' AND office_id =
-            '".$officeId."'");
+           $votingInfo = DB::getInstance()->select("SELECT * FROM $table2 WHERE `voter_id`='".$voterId."' AND office_id =
+            '".$officeId."'")->all();
            
                 if(count($votingInfo)==0) {
-                    $votesql ="INSERT INTO $table2(cand_id, voter_id, office_id, dateTime)
-       	            VALUES('$candId','".$voterId."', '".$officeId."', NOW())";
+                    $inserted = DB::getInstance()->insert($table2, [
+                                                                      'cand_id'=>$candId,
+                                                                      'voter_id'=>$voterId,
+                                                                      'office_id'=>$officeId,
+                                                                      'dateTime'=>date('Y-m-d H:i:s')
+                                                                   ]);
                     
-                    $update = "UPDATE $table SET votingstatus= votingstatus + 1 WHERE id ='".$voterId."'";
+                    $updated = DB::getInstance()->update2($table,['id'=>$voterId], ['votingstatus'=>1], '+');
+                    $updated2 = DB::getInstance()->update2('candidates',['id'=>$candId], ['num_votes'=>1], '+');
 
-                     $update2 ="UPDATE candidates SET num_votes =num_votes+1 WHERE id ='{$candId}'";
-
-       	     if(mysql_query($votesql)&&mysql_query($update)&&mysql_query($update2)) {
+       	     if($inserted&&$updated&&$updated2) {
        	     	header("Location: voting.php");
         
               }
@@ -199,10 +202,9 @@ function isVoting()
       $table2 = 'voters2';
   }
 
-    if(mysql_query("DROP TABLE $table")) {
-
-        $sql ="UPDATE candidates SET num_votes=0";
-        $sql2="UPDATE $table2 SET status = 0, votingstatus = 0";
+    if(!DB::getInstance()->query("DROP TABLE $table")->getError()) {
+        $updated = DB::getInstance()->query("UPDATE candidates SET num_votes=0")->getError();
+        $updated2 = DB::getInstance()->query("UPDATE $table2 SET status = 0, votingstatus = 0")->getError();
 
         $tablesql ="CREATE TABLE IF NOT EXISTS $table(
           id INT UNSIGNED AUTO_INCREMENT,
@@ -211,7 +213,8 @@ function isVoting()
           voter_id INT,
           dateTime DATETIME,
           PRIMARY KEY(id))";
-        if(mysql_query($tablesql) && mysql_query($sql)&&mysql_query($sql2)) {
+        if(!DB::getInstance()->query($tablesql)->getError() && $updated&&$updated2) {
+            
             return true;
         }
     }

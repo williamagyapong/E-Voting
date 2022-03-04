@@ -34,7 +34,7 @@ auth2();
     <meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>voting page</title>
 
-	<!-- <link rel="stylesheet" type="text/css" href="css/bootstrap.css"> -->
+	<link rel="stylesheet" type="text/css" href="css/font-awesome.min.css"> 
 	<link rel="stylesheet" type="text/css" href="css/main.css">
 	<link rel="stylesheet" type="text/css" href="css/voting.css">
    <style type="text/css">
@@ -72,7 +72,7 @@ auth2();
 
      <!-- initialize necessary variables -->
        <?php 
-        $voter = getVoter($table)[0];
+        $voter = getVoter($table);
         $numVoted = $voter['votingstatus'];
 
         if(isset($_POST['confirm'])|| ($voter['status']==1)) {
@@ -84,7 +84,7 @@ auth2();
          }
        ?>
   <div class="nav-buttons">
-      <?php if(getVoter($table)[0]['status']==1 ||empty($offices)):?>
+      <?php if(getVoter($table)['status']==1 ||empty($offices)):?>
       <button class="link-btn"><a href="logout.php?exit">Logout</a></button> 
     <?php endif;?>
 		
@@ -101,7 +101,7 @@ auth2();
      <?php if($finished == true): ?>
      	
          <div class="confirm-msg">
-  	 	  Thank you for voting. You can now logout.
+  	 	    <i>Thank you for voting. You can now log out.</i>
   	     </div> 
   	     
     <!-- the else block of the finished condition -->
@@ -142,7 +142,7 @@ auth2();
                <input type ="hidden" name="office-id" value="<?php echo $office['id'];?>">
              <!-- display offices -->
                <?php if(!empty($votedOffice)):?>
-               <button  id="office_btn2" type="submit" name="select-office" title="Voted"><?php echo $office['office'];?></button>
+               <button  id="office_btn2" type="submit" name="select-office" title="Voted"><?php echo $office['office'];?> <span class="fa fa-check"></span></button>
 
                <?php else:?>
                <button  id="office_btn" type="submit" name="select-office" title="Not voted" ><?php echo $office['office'];?></button>

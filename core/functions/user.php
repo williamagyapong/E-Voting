@@ -20,7 +20,7 @@
 		  {
 		  	//image uploaded; insert data
 
-		  	 if(insert('candidates',[
+		  	 if(DB::getInstance()->insert('candidates',[
 		  	 	'firstname'=>ucwords($fname),
 		  	 	'lastname'=>ucwords($lname),
 		  	 	'office_id'=>$office,
@@ -72,9 +72,10 @@ function register2($fname, $lname, $gender)
 				$voterid .= mt_rand(0, 9);	
 			}
 
-			$idsql ="SELECT voterid FROM voters WHERE voterid = $voterid";
-			$idresult = mysql_query($idsql);
-			$idnum =mysql_num_rows($idresult);
+			//$idsql ="SELECT voterid FROM voters WHERE voterid = $voterid";
+			//$idresult = mysql_query($idsql);
+			//$idnum =mysql_num_rows($idresult);
+			$idnum = count(DB::getInstance()->get('voters', array('voterid','=',$voterId))->all());
 
 			if($idnum>0) {
 			   //voterid already exists
@@ -83,7 +84,7 @@ function register2($fname, $lname, $gender)
 			else
 			{
 				//voterid has not been taken; insert data
-				if(insert('voters',[
+				if(DB::getInstance()->insert('voters',[
 				   'firstname'=>ucwords($fname),
 				   'lastname'=>ucwords($lname),
 				   'gendar' =>ucwords($gender),
@@ -135,10 +136,10 @@ function createVoters()
 
 	for($i=1; $i<=$voters; $i++) {
        $voterId = generateId();
-       $idExists = select("SELECT voterid FROM voters2 WHERE voterid = $voterId");
+       $idExists = DB::getInstance()->select("SELECT voterid FROM voters2 WHERE voterid = $voterId")->all();
        if(empty($idExists)) {
          
-          insert('voters2',[
+          DB::getInstance()->insert('voters2',[
        	       'voterid'=>$voterId
        	  ]);
        	  $count++;
@@ -165,13 +166,12 @@ function voterLogin() {
 	 	 	
 	 	 	$id = $_POST['id'];
 	 	 	//regular voters' data row
-            $row = select("SELECT * FROM `voters` WHERE  `voterid` = '$id'");
+            $row = DB::getInstance()->select("SELECT * FROM `voters` WHERE  `voterid` = '$id'")->all();
             //on-the-fly-voters data row
-            $row2 = select("SELECT * FROM `voters2` WHERE  `voterid` = '$id'");
+            $row2 = DB::getInstance()->select("SELECT * FROM `voters2` WHERE  `voterid` = '$id'")->all();
             $numRows = count($row);
             $numRows2 = count($row2);
 
-	 	 	
 	 	 	  if($numRows==1) {
 	 	 	  	  $row = $row[0];
 	 	 	  	  if ($row['status']==1) {
@@ -185,14 +185,14 @@ function voterLogin() {
 
 	 	 	  	if ($_SESSION['ID']==TRUE) {
 
-	 	 	  		$voterRow =select("SELECT id FROM voters WHERE voterid='".$_SESSION['ID']."'
-	 	 	  		 AND status='0'")[0];
+	 	 	  		$voterRow =DB::getInstance()->select("SELECT id FROM voters WHERE voterid='".$_SESSION['ID']."'
+	 	 	  		 AND status='0'")->first();
 		 
 
-		 $query2 =select("SELECT voter_id FROM voting WHERE voter_id=".$voterRow['id'])[0];
+		 $query2 =DB::getInstance()->select("SELECT voter_id FROM voting WHERE voter_id=".$voterRow['id'])->all();
 		 $numVoted = count($query2);
 
-		 $query3 = select("SELECT id FROM offices");
+		 $query3 = DB::getInstance()->select("SELECT id FROM offices")->all();
 		 $numOffices = count($query3);
 
 		          if ($numVoted==$numOffices && $numVoted!=0) {
@@ -228,14 +228,14 @@ function voterLogin() {
 
 		 	 	  	if ($_SESSION['ID']==TRUE) {
 
-		 	 	  		$voterRow =select("SELECT id FROM voters2 WHERE voterid='".$_SESSION['ID']."'
-		 	 	  		 AND status='0'")[0];
+		 	 	  		$voterRow =DB::getInstance()->select("SELECT id FROM voters2 WHERE voterid='".$_SESSION['ID']."'
+		 	 	  		 AND status='0'")->first();
 			 
 
-			 $query2 =select("SELECT voter_id FROM voting2 WHERE voter_id=".$voterRow['id'])[0];
+			 $query2 =DB::getInstance()->select("SELECT voter_id FROM voting2 WHERE voter_id=".$voterRow['id'])->all();
 			 $numVoted = count($query2);
 
-			 $query3 = select("SELECT id FROM offices");
+			 $query3 = DB::getInstance()->select("SELECT id FROM offices")->all();
 			 $numOffices = count($query3);
 
 			          if ($numVoted==$numOffices && $numVoted!=0) {
@@ -367,10 +367,10 @@ function getVoter($table,$id=null)
 	
 	if($id) {
 		
-		return select("SELECT * FROM $table WHERE id = ".$id);
+		return DB::getInstance()->select("SELECT * FROM $table WHERE id = ".$id)->first();
 	}else {
 		$loginId = $_SESSION['user-id'];
-		return select("SELECT * FROM $table WHERE id = ".$loginId);
+		return DB::getInstance()->select("SELECT * FROM $table WHERE id = ".$loginId)->first();
 	}
 	
 	
@@ -386,10 +386,10 @@ function getCandidate($id = null)
 
    if($id) {
 		
-		return select("SELECT offices.office,candidates.* FROM offices, candidates WHERE candidates.id = $id AND candidates.office_id= offices.id");
+		return DB::getInstance()->select("SELECT offices.office,candidates.* FROM offices, candidates WHERE candidates.id = $id AND candidates.office_id= offices.id")->first();
 	}else {
 
-		return select("SELECT offices.office,candidates.* FROM offices, candidates WHERE candidates.office_id= offices.id");
+		return DB::getInstance()->select("SELECT offices.office,candidates.* FROM offices, candidates WHERE candidates.office_id= offices.id")->all();
 	}
 }
 //print_array(getCandidate(3)); die();
@@ -402,11 +402,11 @@ function getOffices($id= "*")
  {
  	if($id== "*")
  	{
- 		return select("SELECT * FROM offices ORDER BY office ASC");
+ 		return DB::getInstance()->select("SELECT * FROM offices ORDER BY office ASC")->all();
  	}
  	else
  	{
- 		return select("SELECT * FROM offices WHERE id ='$id' ORDER BY office ASC");
+ 		return DB::getInstance()->select("SELECT * FROM offices WHERE id ='$id' ORDER BY office ASC")->first();
  	}
  }
 
@@ -419,11 +419,11 @@ function getOffices($id= "*")
  {
     if($officeid== "*")
  	{
- 		return select("SELECT * FROM `candidates`");
+ 		return DB::getInstance()->get('candidates', array())->all();
  	}
  	else
  	{
- 		return select("SELECT * FROM `candidates` WHERE `office_id` ='$officeid'");
+ 		return DB::getInstance()->select("SELECT * FROM `candidates` WHERE `office_id` ='$officeid'")->all();
  	}
  }
 
@@ -441,14 +441,14 @@ function getOffices($id= "*")
   } else {
     $table2 = "voting2";
   }
- 	$row = select("SELECT * FROM $table2 WHERE `voter_id`='$voterId'");
+ 	$row = DB::getInstance()->select("SELECT * FROM $table2 WHERE `voter_id`='$voterId'")->all();
  	foreach($row as $ids)
  	{
- 		$data[] = select("SELECT offices.*,candidates.* FROM offices, candidates WHERE candidates.id=".$ids['cand_id']." AND offices.id=".$ids['office_id']);
+ 		$data[] = DB::getInstance()->select("SELECT offices.*,candidates.* FROM offices, candidates WHERE candidates.id=".$ids['cand_id']." AND offices.id=".$ids['office_id'])->first();
 
     if($ids['cand_id']==0) {
 
-       $data[] = select("SELECT * FROM `offices` WHERE `id`=".$ids['office_id']);
+       $data[] = DB::getInstance()->select("SELECT * FROM `offices` WHERE `id`=".$ids['office_id'])->all();
     }
  	}
 
@@ -458,7 +458,7 @@ function getOffices($id= "*")
 
  function updateStatus($table)
  {
- 	if(mysql_query("UPDATE $table SET `status`=1 WHERE `id`=".$_SESSION['user-id']))
+ 	if(DB::getInstance()->update($table, $_SESSION['user-id'], ['status'=>1]))
  	{
 
  		return true;

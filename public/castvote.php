@@ -12,15 +12,18 @@
 }  
  if(isset($_SESSION['office-id'])) {
     $officeId = $_SESSION['office-id'];
-    $office  = getOffices($officeId)[0];
+    $office  = getOffices($officeId);
     $candidates = getCandidateByOffice($officeId);
+
  }
    
 ?>
 <!DOCTYPE html>
  <html>
   <head>
-   <link rel="stylesheet" type="text/css" href="css/main.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Cast vote</title>
+    <link rel="stylesheet" type="text/css" href="css/main.css">
 
    <style type="text/css">
       body{

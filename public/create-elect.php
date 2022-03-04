@@ -5,7 +5,7 @@ session_start();
  
  if(isset($_GET['electid'])) {
     
-    $_SESSION['V-TYPE'] = getElection($_GET['electid'])[0]['voters'];
+    $_SESSION['V-TYPE'] = getElection($_GET['electid'], $con)[0]['voters'];
     
      if(isset($_SESSION['V-TYPE'])) {
        //set election session variable to switch between elections
@@ -25,7 +25,7 @@ session_start();
      'name'=>ucwords($_POST['name']),
          'institute'=>ucwords($_POST['institute']),
          'voters'=>$_POST['voters']
-    ] )) {
+    ], $con )) {
     header('Location:dashboard.php');
   }
 }
@@ -73,9 +73,9 @@ session_start();
          	<?php 
                if(isset($_POST['create']))
                {
-               	   $electId = createElection();
+               	   $electId = createElection($con);
                	  
-                     if(createDb($electId)) {
+                     if(createDb($electId,$con)) {
                	  	 echo "Election successfully created.";
                	  } else {
                	  	 echo "Sorry, could not create election.";
@@ -86,7 +86,7 @@ session_start();
         <!-- handle editing of previously created election-->
                  <?php if(isset($_SESSION['EDIT']) && $_SESSION['EDIT']=="election"):
          
-         $election = getElection($_SESSION['EDIT-ID']);
+         $election = getElection($_SESSION['EDIT-ID'], $con);
       ?>
      <form  action="create-elect.php" method="post">
        <fieldset class="fieldset">
@@ -97,23 +97,26 @@ session_start();
           foreach($election as $value) {
         ?>
         <tr>
-      <td> Name</td><td><input class="text-input" type="text" name="name" value="<?php echo $value['name']?>"></td> 
+           <td> Name</td>
+           <td><input class="text-input" type="text" name="name" value="<?php echo $value['name']?>"></td> 
       </tr>
       <tr>
-      <td>Institute</td><td><input class="text-input" type="text" name="institute" value="<?php echo $value['institute']?>"></td>
+          <td>Institution</td>
+          <td><input class="text-input" type="text" name="institute" value="<?php echo $value['institute']?>"></td>
       </tr>
-        <tr>
-      <td>Voters</td>
-      <td><select  name="voters" >
-         <option value="<?php echo $value['voters']?>"><?php echo $value['voters']?></option>
+      <tr>
+          <td>Voters</td>
+          <td>
+              <select  name="voters" >
+                <option value="<?php echo $value['voters']?>"><?php echo $value['voters']?></option>
 
-          <?php if($value['voters']=='non-regular'):?>
-          <option value="regular">regular</option>
-           <?php elseif($value['voters']=='regular'):?>
-          <option value="non-regular">non-regular</option>
-          <?php endif;?>
-          </select>
-      </td>
+                <?php if($value['voters']=='non-regular'):?>
+                <option value="regular">regular</option>
+                 <?php elseif($value['voters']=='regular'):?>
+                <option value="non-regular">non-regular</option>
+                <?php endif;?>
+              </select>
+          </td>
       </tr>
    
        <tr>

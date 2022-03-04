@@ -3,8 +3,9 @@ session_start();
 /*
 *requirements
 */
+//$con = new PDO('mysql:host=127.0.0.1;dbname=admin_db','root', '');
  require '../core/config.php';
- require_once'create_db.php';
+ //require_once'create_db.php';
  
  //free session variables
    unset($_SESSION['EDIT']);
@@ -12,7 +13,8 @@ session_start();
    
  auth(); //prevents unauthorized entry
  
- $elections = getElection();//initialize election variable
+ $elections = getElection('',$con);//initialize election variable
+ 
  
  if(isset($_GET['electid'])) {
     
@@ -53,7 +55,7 @@ session_start();
        <!-- destroy election upon request -->
          <?php 
             if(isset($_GET['destroy'])) {
-                destroyElection();
+                destroyElection($con);
             }
          ?>
       </h2>
@@ -62,8 +64,10 @@ session_start();
     <?php if(isset($_SESSION['ELECTID'])):?>
     
     <center>
-        <h2><?php echo getElection($_SESSION['ELECTID'])[0]['name'];?></h2>
+        <h2><span style="color: gray;">Active Election: </span><?php echo getElection($_SESSION['ELECTID'],$con)[0]['name'];?></h2>
     </center>
+    <?php else:?>
+        <h2>No Election selected</h2>
     <?php endif; ?>
     <nav class="navbar navbar-default" role="navigation">
     	<div class="container-fluid">
@@ -122,13 +126,24 @@ session_start();
               </a></li>
     		
                     <li class="divider"></li>
-                    <li><a href="logout.php?close">Close Election</a></li>
+                    <li>
+                        <a href="logout.php?close"> 
+                            <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                            <span class="hidden-xs hidden-sm">Close Election</span></a>
+                    </li>
                     <li class="divider"></li>
 
-                    <li><a href="dashboard.php?destroy" onclick="return submitAlert()">Destroy Election</a></li>
+                    <li>
+                        <a href="dashboard.php?destroy" onclick="return submitAlert()">
+                         <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+                        <span class="hidden-xs hidden-sm">
+                         Destroy Election</span></a>
+                    </li>
                     <li class="divider"></li>
 
-                    <li><a href="control.php?clear" onclick="return submitAlert2()">Reset Voting</a></li>
+                    <li><a href="control.php?clear" onclick="return submitAlert2()">
+                    <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>
+                        <span class="hidden-xs hidden-sm">Reset Voting</span></a></li>
 
                     
     		  	  </ul>

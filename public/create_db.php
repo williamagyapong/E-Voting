@@ -1,12 +1,13 @@
 <?php
  
  
-  @mysql_connect("localhost", "root", "") or die("db server not found");
+  //@mysql_connect("localhost", "root", "") or die("db server not found");
+    $con = new PDO('mysql:host=127.0.0.1;dbname=mysql', 'root', '');
  
         $sql ="CREATE DATABASE IF NOT EXISTS admin_db ";
-       if(mysql_query($sql)) {
+       if($con->query($sql)) {
 
-        mysql_query("USE admin_db");
+        $con->query("USE admin_db");
        
         $elections = "CREATE TABLE IF NOT EXISTS elections(
          elect_id INT UNSIGNED AUTO_INCREMENT ,
@@ -26,13 +27,14 @@
           username VARCHAR(20),
           password VARCHAR(100),
           PRIMARY KEY(id))"; 
-        if(mysql_query($elections)&& mysql_query($admin)) {
+        if($con->query($elections)&& $con->query($admin)) {
           //echo "The database with all the tables has been created.";
           
-           @mysql_select_db("admin_db")or die("attempting to select non existing database");
+           //@mysql_select_db("admin_db")or die("attempting to select non existing database");
+           $con = new PDO('mysql:host=127.0.0.1;dbname=admin_db', 'root', '');
           $sql = "SELECT * FROM  admin";
-          $result = mysql_query($sql);
-          $numrow = mysql_num_rows($result);
+          $result = $con->query($sql);
+          $numrow = $result->rowCount();
 
           $pass1 = md5("willi0010");
           $pass2 = md5("234546");
@@ -44,7 +46,7 @@
             $adminsql ="INSERT INTO admin(username, password)
              VALUES('willisco', '{$pass1}'),('admin1', '{$pass2}'),('admin2', '{$pass3}') ,
              ('admin3', '{$pass4}'),('admin4','{$pass5}')";
-             mysql_query($adminsql);
+             $con->query($adminsql);
           } else{
               //echo "Could not establish admin credentials";
           }

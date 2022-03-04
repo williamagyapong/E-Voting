@@ -4,6 +4,7 @@
  auth2();//prevents unauthorized entry
  $voterId = $_SESSION['user-id'];
  $candidates = getCandidateWithOffice();
+
  
 ?>
 <!DOCTYPE html>
@@ -34,8 +35,8 @@
           <th style="border-right:thin solid #cccccc;">Action</th>
        </tr>
        <?php 
-          foreach($candidates as $candInfo) {
-             foreach($candInfo as $candidate) {
+          foreach($candidates as $candidate) {
+
        ?>
        <tr>
          <?php if(isset($candidate['firstName'], $candidate['lastName'], $candidate['images'])):?>
@@ -67,7 +68,7 @@
        </tr>
        <?php 
        }
-     };?>
+       ?>
     </table>
 
    <!--display confirm button-->

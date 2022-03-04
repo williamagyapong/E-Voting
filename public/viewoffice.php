@@ -27,7 +27,7 @@ require_once 'includes/header.php';
 
  //select offices
  $offices = getOffices();
-
+ 
  ?>
 
 <?php

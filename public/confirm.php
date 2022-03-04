@@ -13,8 +13,9 @@ if(isset($_SESSION['USERNAME'])) {
 
 if(isset($_POST['confirm']))
   {
-  	$sql = "UPDATE $table SET status =1 WHERE voterid=".$_SESSION['ID'];
-  	if(mysql_query($sql)){
+    $updated = DB::getInstance()->update($table, $_SESSION['ID'], ['status'=>1], 'voterid');
+  	
+  	if($updated){
   		header("Location: voting.php?ID=73");
   	} else{
   		echo "unable to confirm votes";
@@ -23,7 +24,7 @@ if(isset($_POST['confirm']))
   }
    elseif (isset($_POST['uyes'])) {
 
-       $row  = select("SELECT id FROM $table WHERE voterid=".$_SESSION['ID'])[0];
+       $row  = DB::getInstance()->select("SELECT id FROM $table WHERE voterid=".$_SESSION['ID'])->first();
 
        $officeId =$_POST['officeid'];
 
@@ -36,14 +37,12 @@ if(isset($_POST['confirm']))
           
             $candId = $_POST['candid'];
 
-            $delsql ="DELETE FROM $table2 WHERE voter_id ='".$row['id']."' AND cand_id='".$candId."'";
+            $deleted = DB::getInstance()->delete('','', "DELETE FROM $table2 WHERE voter_id ='".$row['id']."' AND cand_id='".$candId."'");
+            $candUpdated = DB::getInstance()->update2('candidates',['id'=>$candId], ['num_votes'=>1], '-' );
+  
+            $voterUpdated = DB::getInstance()->update2($table,['id'=>$row['id']], ['votingstatus'=>1], '-' );
 
-            $updatesql ="UPDATE candidates SET num_votes = num_votes-1 WHERE id =".$candId;
-
-            $updatesql2 ="UPDATE $table SET votingstatus = votingstatus-1 WHERE id =".$row['id'];
-            
-
-            if(mysql_query($delsql)&&mysql_query($updatesql)&&mysql_query($updatesql2)) {
+            if($deleted&&$candUpdated&&$voterUpdated) {
               //header("Location: voting.php?ID2=74");
             
               unset($_SESSION['office-id']);
@@ -53,12 +52,11 @@ if(isset($_POST['confirm']))
         }
 
       } else{
+              $deleted = DB::getInstance()->delete('','', "DELETE FROM $table2 WHERE voter_id ='".$row['id']."' AND office_id='".$officeId."'");
 
-              $delsql ="DELETE FROM $table2 WHERE voter_id ='".$row['id']."' AND office_id='".$officeId."'";
+              $voterUpdated = DB::getInstance()->update2($table,['id'=>$row['id']], ['votingstatus'=>1], '-' );
 
-              $updatesql ="UPDATE $table SET votingstatus = votingstatus-1 WHERE id =".$row['id'];
-
-              if(mysql_query($delsql)&&mysql_query($updatesql)) {
+              if($deleted&&$voterUpdated) {
                 
                 unset($_SESSION['office-id']);
                 $_SESSION['office-id'] = $officeId;
